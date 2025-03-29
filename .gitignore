@@ -1,0 +1,38 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter/IPython
+.ipynb_checkpoints/
+
+# VSCode/PyCharm/IDE
+.vscode/
+.idea/
+
+# Environment files
+.env
+.venv/
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results/output
+../../../SAM/results/
+*.csv
+*.pth
+*.png
+logs/
+*.log
+
+# Data cache
+*.npz
+*.npy
+cifar-*
+
+
+cifar/
