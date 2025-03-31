@@ -57,7 +57,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet_cifar(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=100):
         super(ResNet_cifar, self).__init__()
         self.in_planes = 16
 
@@ -88,27 +88,27 @@ class ResNet_cifar(nn.Module):
 
 
 # CIFAR-style ResNet configurations
-def ResNet20(num_classes=10):
+def ResNet20(num_classes=100):
     depth = 20
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet32(num_classes=10):
+def ResNet32(num_classes=100):
     depth = 32
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet44(num_classes=10):
+def ResNet44(num_classes=100):
     depth = 44
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet56(num_classes=10):
+def ResNet56(num_classes=100):
     depth = 56
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet110(num_classes=10):
+def ResNet110(num_classes=100):
     depth = 110
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)

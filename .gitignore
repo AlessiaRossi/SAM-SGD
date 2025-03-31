@@ -36,3 +36,4 @@ cifar-*
 
 
 cifar/
+run_training.sh

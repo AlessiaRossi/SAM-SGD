@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import CIFAR100
 
 
 from model.ResNet import ResNet20, ResNet32, ResNet44, ResNet56, ResNet110
@@ -20,6 +20,10 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
     for epoch in range(args.epochs):
         model.train()
         log.train(len_dataset=len(dataset["train"]))
+
+        epoch_loss = 0.0
+        epoch_correct = 0
+        total_samples = 0
 
         for inputs, targets in dataset["train"]:
             inputs, targets = inputs.to(device), targets.to(device)
@@ -44,8 +48,16 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
 
             with torch.no_grad():
                 correct = torch.argmax(predictions, dim=1) == targets
+                epoch_loss += loss.item() * inputs.size(0)
+                epoch_correct += correct.sum().item()
+                total_samples += inputs.size(0)
                 log(model, loss.cpu(), correct.cpu(), scheduler.lr(), y_true=targets, y_pred=torch.argmax(predictions, 1))
                 scheduler(epoch)
+
+        # Calcola la media per epoca
+        avg_loss = epoch_loss / total_samples
+        avg_accuracy = epoch_correct / total_samples * 100
+        print(f"Epoch {epoch}: Average Loss = {avg_loss:.4f}, Average Accuracy = {avg_accuracy:.2f}%")
 
         model.eval()
         log.eval(len_dataset=len(dataset["test"]))
@@ -59,12 +71,11 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
                 log(model, loss.cpu(), correct.cpu(), y_true=targets, y_pred=torch.argmax(predictions, 1))
 
     log.flush()
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=128, type=int)
     parser.add_argument("--depth", default=20, type=int)
-    parser.add_argument("--epochs", default=5, type=int)
+    parser.add_argument("--epochs", default=100, type=int)
     parser.add_argument("--learning_rate", default=0.1, type=float)
     parser.add_argument("--momentum", default=0.9, type=float)
     parser.add_argument("--weight_decay", default=5e-4, type=float)
@@ -87,8 +98,8 @@ if __name__ == "__main__":
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
-    train_dataset = CIFAR10(root="./cifar", train=True, download=True, transform=transform_train)
-    test_dataset = CIFAR10(root="./cifar", train=False, download=True, transform=transform_test)
+    train_dataset = CIFAR100(root="./cifar", train=True, download=True, transform=transform_train)
+    test_dataset = CIFAR100(root="./cifar", train=False, download=True, transform=transform_test)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
@@ -106,14 +117,14 @@ if __name__ == "__main__":
         raise ValueError(f"Unsupported depth {args.depth}")
 
     print(">>> Training with SGD")
-    model_sgd = model_fn(num_classes=10).to(device)
+    model_sgd = model_fn(num_classes=100).to(device)
     optimizer_sgd = torch.optim.SGD(model_sgd.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler_sgd = StepLR(optimizer_sgd, args.learning_rate, args.epochs)
     log_sgd = Log(log_each=10, log_file="training_sgd.csv", model_name="model_sgd.pth")
     train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False)
 
     print("\n>>> Training with SAM")
-    model_sam = model_fn(num_classes=10).to(device)
+    model_sam = model_fn(num_classes=100).to(device)
     base_optimizer = torch.optim.SGD
     optimizer_sam = SAM(model_sam.parameters(), base_optimizer, rho=args.rho, adaptive=False, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler_sam = StepLR(optimizer_sam.base_optimizer, args.learning_rate, args.epochs)
