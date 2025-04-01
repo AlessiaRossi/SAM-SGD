@@ -3,7 +3,7 @@ import os
 import csv
 import torch
 import matplotlib.pyplot as plt
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
 
 
 def enable_running_stats(model):
@@ -65,7 +65,12 @@ class Log:
 
         y_true = self.epoch_state["y_true"]
         y_pred = self.epoch_state["y_pred"]
+
+        # Calcolo delle metriche
         f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
+        precision = precision_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
+        recall = recall_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
+        conf_matrix = confusion_matrix(y_true, y_pred) if y_true and y_pred else None
 
         if self.is_train:
             print(
@@ -78,15 +83,33 @@ class Log:
             if accuracy > self.best_accuracy:
                 self.best_accuracy = accuracy
 
+        # Salva i risultati nel file di log
         with open(self.log_file, mode='a', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow([self.epoch, f"{loss:.4f}", f"{accuracy:.4f}", f"{self.learning_rate:.3e}" if self.is_train else "-", self._time(), f"{f1:.4f}"])
+            writer.writerow([
+                self.epoch,
+                f"{loss:.4f}",
+                f"{accuracy:.4f}",
+                f"{self.learning_rate:.3e}" if self.is_train else "-",
+                self._time(),
+                f"{f1:.4f}",
+                f"{precision:.4f}",
+                f"{recall:.4f}"
+            ])
+
+        # Salva la confusion matrix in un file separato
+        if conf_matrix is not None and not self.is_train:
+            conf_matrix_path = os.path.join(self.log_dir, f"confusion_matrix_epoch_{self.epoch}.csv")
+            with open(conf_matrix_path, mode='w', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow([""] + [f"Class {i}" for i in range(len(conf_matrix))])
+                for i, row in enumerate(conf_matrix):
+                    writer.writerow([f"Class {i}"] + row.tolist())
 
         if not self.is_train:
-            self.log_data.append((self.epoch, loss, accuracy, f1))
+            self.log_data.append((self.epoch, loss, accuracy, f1, precision, recall))
             self._plot_metrics()
-            self._plot_comparison()
-
+            
     def _train_step(self, model, loss, accuracy, learning_rate: float, y_true=None, y_pred=None) -> None:
         self.learning_rate = learning_rate
         batch_size = accuracy.size(0)
@@ -149,11 +172,13 @@ class Log:
         if not self.log_data:
             return
 
-        epochs, losses, accuracies, f1s = zip(*self.log_data)
+        epochs, losses, accuracies, f1s, precisions, recalls = zip(*self.log_data)
         plt.figure(figsize=(10, 5))
         plt.plot(epochs, losses, label='Loss')
         plt.plot(epochs, accuracies, label='Accuracy')
         plt.plot(epochs, f1s, label='F1-score')
+        plt.plot(epochs, precisions, label='Precision')
+        plt.plot(epochs, recalls, label='Recall')
         plt.xlabel('Epoch')
         plt.ylabel('Metric')
         plt.title('Validation Metrics Over Epochs')
