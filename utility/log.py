@@ -3,7 +3,7 @@ import os
 import csv
 import torch
 import matplotlib.pyplot as plt
-from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 
 def enable_running_stats(model):
@@ -70,8 +70,7 @@ class Log:
         f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         precision = precision_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         recall = recall_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        conf_matrix = confusion_matrix(y_true, y_pred) if y_true and y_pred else None
-
+        
         if self.is_train:
             print(
                 f"\r┃{self.epoch:12d}  ┃{loss:12.4f}  │{100*accuracy:10.2f} %  ┃{self.learning_rate:12.3e}  │{self._time():>12}  ┃",
@@ -97,15 +96,8 @@ class Log:
                 f"{recall:.4f}"
             ])
 
-        # Salva la confusion matrix in un file separato
-        if conf_matrix is not None and not self.is_train:
-            conf_matrix_path = os.path.join(self.log_dir, f"confusion_matrix_epoch_{self.epoch}.csv")
-            with open(conf_matrix_path, mode='w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow([""] + [f"Class {i}" for i in range(len(conf_matrix))])
-                for i, row in enumerate(conf_matrix):
-                    writer.writerow([f"Class {i}"] + row.tolist())
-
+        
+        
         if not self.is_train:
             self.log_data.append((self.epoch, loss, accuracy, f1, precision, recall))
             self._plot_metrics()
