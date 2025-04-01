@@ -54,7 +54,7 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
                 log(model, loss.cpu(), correct.cpu(), scheduler.lr(), y_true=targets, y_pred=torch.argmax(predictions, 1))
                 scheduler(epoch)
 
-        
+        # Calcola la media per epoca
         avg_loss = epoch_loss / total_samples
         avg_accuracy = epoch_correct / total_samples * 100
         print(f"Epoch {epoch}: Average Loss = {avg_loss:.4f}, Average Accuracy = {avg_accuracy:.2f}%")
