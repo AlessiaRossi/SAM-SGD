@@ -18,6 +18,7 @@ def disable_running_stats(model):
             module.eval()
 
 
+
 class Log:
     def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth"):
         self.best_accuracy = 0.0
@@ -34,7 +35,7 @@ class Log:
 
         with open(self.log_file, mode='w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["epoch", "loss", "accuracy", "learning_rate", "elapsed", "f1_score"])
+            writer.writerow(["epoch", "loss", "accuracy", "learning_rate", "elapsed", "f1_score", "precision", "recall"])
 
     def train(self, len_dataset: int) -> None:
         self.epoch += 1
@@ -44,7 +45,6 @@ class Log:
             self.flush()
 
         self.is_train = True
-        self.last_steps_state = {"loss": 0.0, "accuracy": 0.0, "steps": 0, "y_true": [], "y_pred": []}
         self._reset(len_dataset)
 
     def eval(self, len_dataset: int) -> None:
@@ -62,15 +62,12 @@ class Log:
     def flush(self) -> None:
         loss = self.epoch_state["loss"] / self.epoch_state["steps"]
         accuracy = self.epoch_state["accuracy"] / self.epoch_state["steps"]
-
         y_true = self.epoch_state["y_true"]
         y_pred = self.epoch_state["y_pred"]
 
-        # Calcolo delle metriche
         f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         precision = precision_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         recall = recall_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        conf_matrix = confusion_matrix(y_true, y_pred) if y_true and y_pred else None
 
         if self.is_train:
             print(
@@ -83,7 +80,6 @@ class Log:
             if accuracy > self.best_accuracy:
                 self.best_accuracy = accuracy
 
-        # Salva i risultati nel file di log
         with open(self.log_file, mode='a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([
@@ -97,25 +93,13 @@ class Log:
                 f"{recall:.4f}"
             ])
 
-        # Salva la confusion matrix in un file separato
-        if conf_matrix is not None and not self.is_train:
-            conf_matrix_path = os.path.join(self.log_dir, f"confusion_matrix_epoch_{self.epoch}.csv")
-            with open(conf_matrix_path, mode='w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow([""] + [f"Class {i}" for i in range(len(conf_matrix))])
-                for i, row in enumerate(conf_matrix):
-                    writer.writerow([f"Class {i}"] + row.tolist())
-
         if not self.is_train:
             self.log_data.append((self.epoch, loss, accuracy, f1, precision, recall))
             self._plot_metrics()
-            
+
     def _train_step(self, model, loss, accuracy, learning_rate: float, y_true=None, y_pred=None) -> None:
         self.learning_rate = learning_rate
         batch_size = accuracy.size(0)
-        self.last_steps_state["loss"] += loss.sum().item()
-        self.last_steps_state["accuracy"] += accuracy.sum().item()
-        self.last_steps_state["steps"] += batch_size
         self.epoch_state["loss"] += loss.sum().item()
         self.epoch_state["accuracy"] += accuracy.sum().item()
         self.epoch_state["steps"] += batch_size
@@ -125,9 +109,8 @@ class Log:
         self.step += 1
 
         if self.step % self.log_each == self.log_each - 1:
-            loss = self.last_steps_state["loss"] / self.last_steps_state["steps"]
-            accuracy = self.last_steps_state["accuracy"] / self.last_steps_state["steps"]
-            self.last_steps_state = {"loss": 0.0, "accuracy": 0.0, "steps": 0, "y_true": [], "y_pred": []}
+            loss = self.epoch_state["loss"] / self.epoch_state["steps"]
+            accuracy = self.epoch_state["accuracy"] / self.epoch_state["steps"]
 
             print(
                 f"\r┃{self.epoch:12d}  ┃{loss:12.4f}  │{100*accuracy:10.2f} %  ┃{learning_rate:12.3e}  │{self._time():>12}  ┃",
@@ -187,7 +170,6 @@ class Log:
         filename = os.path.splitext(os.path.basename(self.model_name))[0]
         plt.savefig(os.path.join(self.log_dir, f"metrics_plot_{filename}.png"))
         plt.close()
-
     def _plot_comparison(self):
         try:
             import pandas as pd
