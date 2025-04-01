@@ -54,9 +54,17 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
                 log(model, loss.cpu(), correct.cpu(), scheduler.lr(), y_true=targets, y_pred=torch.argmax(predictions, 1))
                 scheduler(epoch)
 
+        # Calcola la media per epoca
+        avg_loss = epoch_loss / total_samples
+        avg_accuracy = epoch_correct / total_samples * 100
+        print(f"Epoch {epoch}: Average Loss = {avg_loss:.4f}, Average Accuracy = {avg_accuracy:.2f}%")
 
         model.eval()
         log.eval(len_dataset=len(dataset["test"]))
+        
+        epoch_loss = 0.0
+        epoch_correct = 0
+        total_samples = 0
 
         with torch.no_grad():
             for inputs, targets in dataset["test"]:

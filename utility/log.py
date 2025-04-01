@@ -3,7 +3,7 @@ import os
 import csv
 import torch
 import matplotlib.pyplot as plt
-from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 
 def enable_running_stats(model):
@@ -69,7 +69,7 @@ class Log:
         f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         precision = precision_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
         recall = recall_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-
+        
         if self.is_train:
             print(
                 f"\r┃{self.epoch:12d}  ┃{loss:12.4f}  │{100*accuracy:10.2f} %  ┃{self.learning_rate:12.3e}  │{self._time():>12}  ┃",
@@ -94,6 +94,8 @@ class Log:
                 f"{recall:.4f}"
             ])
 
+        
+        
         if not self.is_train:
             self.log_data.append((self.epoch, loss, accuracy, f1, precision, recall))
             self._plot_metrics()
