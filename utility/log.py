@@ -20,7 +20,7 @@ def disable_running_stats(model):
 
 
 class Log:
-    def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth"):
+    def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth", algorithm_name=""):
         self.best_accuracy = 0.0
         self.best_f1 = 0.0
         self.log_each = log_each
@@ -30,6 +30,7 @@ class Log:
         self.best_model_path = os.path.join(log_dir, model_name)
         self.model_name = model_name
         self.log_data = []
+        self.algorithm_name = algorithm_name
 
         os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
 

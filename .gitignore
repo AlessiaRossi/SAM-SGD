@@ -22,10 +22,10 @@ build/
 Thumbs.db
 
 # Results/output
-../../../SAM/results/
-*.csv
+#../../../SAM/results/
+#*.csv
 *.pth
-*.png
+#*.png
 logs/
 *.log
 
