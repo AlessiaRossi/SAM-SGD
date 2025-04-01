@@ -54,17 +54,9 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
                 log(model, loss.cpu(), correct.cpu(), scheduler.lr(), y_true=targets, y_pred=torch.argmax(predictions, 1))
                 scheduler(epoch)
 
-        # Calcola la media per epoca
-        avg_loss = epoch_loss / total_samples
-        avg_accuracy = epoch_correct / total_samples * 100
-        print(f"Epoch {epoch}: Average Loss = {avg_loss:.4f}, Average Accuracy = {avg_accuracy:.2f}%")
 
         model.eval()
         log.eval(len_dataset=len(dataset["test"]))
-        
-        epoch_loss = 0.0
-        epoch_correct = 0
-        total_samples = 0
 
         with torch.no_grad():
             for inputs, targets in dataset["test"]:
@@ -121,11 +113,11 @@ if __name__ == "__main__":
         raise ValueError(f"Unsupported depth {args.depth}")
 
     print(">>> Training with SGD")
-    #model_sgd = model_fn(num_classes=10).to(device)
-    #optimizer_sgd = torch.optim.SGD(model_sgd.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-    #scheduler_sgd = StepLR(optimizer_sgd, args.learning_rate, args.epochs)
-    #log_sgd = Log(log_each=10, log_file="training_sgd.csv", model_name="model_sgd.pth")
-    #train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False)
+    model_sgd = model_fn(num_classes=10).to(device)
+    optimizer_sgd = torch.optim.SGD(model_sgd.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler_sgd = StepLR(optimizer_sgd, args.learning_rate, args.epochs)
+    log_sgd = Log(log_each=10, log_file="training_sgd.csv", model_name="model_sgd.pth")
+    train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False)
 
     print("\n>>> Training with SAM")
     model_sam = model_fn(num_classes=10).to(device)
@@ -135,5 +127,5 @@ if __name__ == "__main__":
     log_sam = Log(log_each=10, log_file="training_sam.csv", model_name="model_sam.pth")
     train(model_sam, optimizer_sam, scheduler_sam, dataset, args, log_sam, use_sam=True)
 
-    #print(f"\nFinal Accuracy SGD:  {log_sgd.best_accuracy * 100:.2f}%")
+    print(f"\nFinal Accuracy SGD:  {log_sgd.best_accuracy * 100:.2f}%")
     print(f"Final Accuracy SAM:  {log_sam.best_accuracy * 100:.2f}%")
