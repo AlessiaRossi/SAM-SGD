@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# TO DO: vedere come cambia con resnet diverse più profonde
 class BasicBlock(nn.Module):
     expansion = 1
 
@@ -93,22 +93,22 @@ def ResNet20(num_classes=10):
     n = (depth - 2) // 6
     return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet32(num_classes=10):
-    depth = 32
-    n = (depth - 2) // 6
-    return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
+#def ResNet32(num_classes=10):
+ #   depth = 32
+  #  n = (depth - 2) // 6
+   # return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet44(num_classes=10):
-    depth = 44
-    n = (depth - 2) // 6
-    return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
+#def ResNet44(num_classes=10):
+ #   depth = 44
+  #  n = (depth - 2) // 6
+   # return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet56(num_classes=10):
-    depth = 56
-    n = (depth - 2) // 6
-    return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
+#def ResNet56(num_classes=10):
+ #   depth = 56
+  #  n = (depth - 2) // 6
+   # return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
 
-def ResNet110(num_classes=10):
-    depth = 110
-    n = (depth - 2) // 6
-    return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)
+#def ResNet110(num_classes=10):
+ #   depth = 110
+  #  n = (depth - 2) // 6
+   # return ResNet_cifar(BasicBlock, [n, n, n], num_classes=num_classes)

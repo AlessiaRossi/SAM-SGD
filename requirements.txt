@@ -3,7 +3,4 @@ torchvision
 numpy
 argparse
 matplotlib
-time
 scikit-learn
-csv
-os
