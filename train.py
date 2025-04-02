@@ -5,8 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
 
-
-from model.ResNet import ResNet20, ResNet32, ResNet44, ResNet56, ResNet110
+from model.Net import ResNet20, ResNet32, ResNet44, ResNet56, ResNet110, WRN56_2, WRN56_4, WRN56_8
 from utility.log import Log
 from utility.initialize import initialize
 from utility.lr import StepLR
@@ -70,7 +69,7 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=128, type=int)
-    parser.add_argument("--depth", default=20, type=int)
+    parser.add_argument("--depth", default=2, type=int) # 20 default per resnet, 2 default per wresnet
     parser.add_argument("--epochs", default=5, type=int)
     parser.add_argument("--learning_rate", default=0.1, type=float)
     parser.add_argument("--momentum", default=0.9, type=float)
@@ -101,14 +100,23 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
     dataset = {"train": train_loader, "test": test_loader}
 
-    resnet_versions = {
+    '''resnet_versions = {
         20: ResNet20,
         32: ResNet32,
         44: ResNet44,
         56: ResNet56,
         110: ResNet110,
     }
-    model_fn = resnet_versions.get(args.depth)
+    model_fn = resnet_versions.get(args.depth)'''
+    wresnet_versions = {
+        2: WRN56_2,
+        4:WRN56_4,
+        8:WRN56_8
+    }
+    model_fn = wresnet_versions.get(args.depth)
+
+
+
     if model_fn is None:
         raise ValueError(f"Unsupported depth {args.depth}")
 
