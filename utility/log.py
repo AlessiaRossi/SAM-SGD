@@ -31,95 +31,83 @@ class Log:
         self.model_name = model_name
         self.log_data = []
         self.algorithm_name = algorithm_name
+        self.val_metrics = {}
+        self.test_metrics = {}
 
         os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
 
         with open(self.log_file, mode='w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["epoch", "loss", "accuracy", "learning_rate", "elapsed", "f1_score", "precision", "recall"])
+            writer.writerow(["epoch", "val_loss", "val_accuracy", "test_loss", "test_accuracy"])
 
     def train(self, len_dataset: int) -> None:
         self.epoch += 1
         if self.epoch == 0:
             self._print_header()
-        else:
-            self.flush()
-
         self.is_train = True
         self._reset(len_dataset)
 
-    def eval(self, len_dataset: int) -> None:
+    def eval(self, len_dataset: int, label="Validation") -> None:
         self.flush()
         self.is_train = False
+        self.eval_label = label
         self._reset(len_dataset)
 
     def __call__(self, model, loss, accuracy, learning_rate: float = None, y_true=None, y_pred=None) -> None:
+        self._eval_step(loss, accuracy, y_true, y_pred)
         if self.is_train:
-            self._train_step(model, loss, accuracy, learning_rate, y_true, y_pred)
-        else:
-            self._eval_step(loss, accuracy, y_true, y_pred)
+            self.learning_rate = learning_rate
             self._save_if_best(model)
 
+
     def flush(self) -> None:
+        if not hasattr(self, "epoch_state") or self.is_train or self.epoch_state["steps"] == 0:
+            return
+
         loss = self.epoch_state["loss"] / self.epoch_state["steps"]
         accuracy = self.epoch_state["accuracy"] / self.epoch_state["steps"]
         y_true = self.epoch_state["y_true"]
         y_pred = self.epoch_state["y_pred"]
 
-        f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        precision = precision_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        recall = recall_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        
-        if self.is_train:
-            print(
-                f"\r┃{self.epoch:12d}  ┃{loss:12.4f}  │{100*accuracy:10.2f} %  ┃{self.learning_rate:12.3e}  │{self._time():>12}  ┃",
-                end="",
-                flush=True,
-            )
-        else:
-            print(f"{loss:12.4f}  │{100*accuracy:10.2f} %  ┃", flush=True)
+        f1 = f1_score(y_true, y_pred, average='macro') if len(y_true) > 0 else 0.0
+        precision = precision_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
+        recall = recall_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
+
+        if self.eval_label == "Validation":
+            self.val_metrics = {"loss": loss, "accuracy": accuracy}
             if accuracy > self.best_accuracy:
                 self.best_accuracy = accuracy
+
+        elif self.eval_label == "Test":
+            self.test_metrics = {"loss": loss, "accuracy": accuracy}
+
+        if hasattr(self, "val_metrics") and hasattr(self, "test_metrics"):
+            val_loss = self.val_metrics.get("loss") if hasattr(self, "val_metrics") else None
+            val_acc = self.val_metrics.get("accuracy") if hasattr(self, "val_metrics") else None
+            test_loss = self.test_metrics.get("loss", 0.0)
+            test_acc = self.test_metrics.get("accuracy", 0.0)
+
+            if val_loss is None or val_acc is None:
+                print(f"[WARNING] Validation metrics not available before test flush at epoch {self.epoch}.")
+                return
+
+            print(
+                f"┃{self.epoch:12d}  ┃{val_loss:12.4f}  │{100*val_acc:10.2f} %  ┃"
+                f"{test_loss:12.4f} │{100*test_acc:10.2f} %┃",
+                flush=True
+            )
 
         with open(self.log_file, mode='a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([
                 self.epoch,
-                f"{loss:.4f}",
-                f"{accuracy:.4f}",
-                f"{self.learning_rate:.3e}" if self.is_train else "-",
-                self._time(),
-                f"{f1:.4f}",
-                f"{precision:.4f}",
-                f"{recall:.4f}"
+                f"{val_loss:.4f}",
+                f"{val_acc:.4f}",
+                f"{test_loss:.4f}",
+                f"{test_acc:.4f}"
             ])
 
-        
-        
-        if not self.is_train:
-            self.log_data.append((self.epoch, loss, accuracy, f1, precision, recall))
-            self._plot_metrics()
 
-    def _train_step(self, model, loss, accuracy, learning_rate: float, y_true=None, y_pred=None) -> None:
-        self.learning_rate = learning_rate
-        batch_size = accuracy.size(0)
-        self.epoch_state["loss"] += loss.sum().item()
-        self.epoch_state["accuracy"] += accuracy.sum().item()
-        self.epoch_state["steps"] += batch_size
-        if y_true is not None and y_pred is not None:
-            self.epoch_state["y_true"].extend(y_true.cpu().tolist())
-            self.epoch_state["y_pred"].extend(y_pred.cpu().tolist())
-        self.step += 1
-
-        if self.step % self.log_each == self.log_each - 1:
-            loss = self.epoch_state["loss"] / self.epoch_state["steps"]
-            accuracy = self.epoch_state["accuracy"] / self.epoch_state["steps"]
-
-            print(
-                f"\r┃{self.epoch:12d}  ┃{loss:12.4f}  │{100*accuracy:10.2f} %  ┃{learning_rate:12.3e}  │{self._time():>12}  ┃",
-                end="",
-                flush=True,
-            )
 
     def _eval_step(self, loss, accuracy, y_true=None, y_pred=None) -> None:
         batch_size = accuracy.size(0)
@@ -144,15 +132,11 @@ class Log:
         self.len_dataset = len_dataset
         self.epoch_state = {"loss": 0.0, "accuracy": 0.0, "steps": 0, "y_true": [], "y_pred": []}
 
-    def _time(self) -> str:
-        time_seconds = int(time.time() - self.start_time)
-        return f"{time_seconds // 60:02d}:{time_seconds % 60:02d} min"
-
     def _print_header(self) -> None:
-        print(f"┏━━━━━━━━━━━━━━┳━━━━━━━╸T╺╸R╺╸A╺╸I╺╸N╺━━━━━━━┳━━━━━━━╸S╺╸T╺╸A╺╸T╺╸S╺━━━━━━━┳━━━━━━━╸V╺╸A╺╸L╺╸I╺╸D╺━━━━━━━┓")
-        print(f"┃              ┃              ╷              ┃              ╷              ┃              ╷              ┃")
-        print(f"┃       epoch  ┃        loss  │    accuracy  ┃        l.r.  │     elapsed  ┃        loss  │    accuracy  ┃")
-        print(f"┠──────────────╂──────────────┼──────────────╂──────────────┼──────────────╂──────────────┼──────────────┨")
+        print(f"┏━━━━━━━━━━━━━━┳━━━━━━━╸V╺╸A╺╸L╺╸I╺╸D╺━━━━━━━┳━━━━━━━╸T-E-S-T╺━━━━━━━┓")
+        print(f"┃              ┃              ╷              ┃             ╷         ┃")
+        print(f"┃       epoch  ┃        loss  │    accuracy  ┃       loss  │accuracy ┃")
+        print(f"┠──────────────╂──────────────┼──────────────╂─────────────┼─────────┨")
 
     def _plot_metrics(self):
         if not self.log_data:
@@ -173,36 +157,42 @@ class Log:
         filename = os.path.splitext(os.path.basename(self.model_name))[0]
         plt.savefig(os.path.join(self.log_dir, f"metrics_plot_{filename}.png"))
         plt.close()
+        
     def _plot_comparison(self):
         try:
             import pandas as pd
-            sam_path = os.path.join(self.log_dir, "training_sam.csv")
-            sgd_path = os.path.join(self.log_dir, "training_sgd.csv")
+            sam_path = os.path.join(self.log_dir, "evaluation_sam.csv")
+            sgd_path = os.path.join(self.log_dir, "evaluation_sgd.csv")
 
             if os.path.exists(sam_path) and os.path.exists(sgd_path):
                 sam_df = pd.read_csv(sam_path)
                 sgd_df = pd.read_csv(sgd_path)
 
                 plt.figure(figsize=(10, 5))
-                plt.plot(sam_df["epoch"], sam_df["accuracy"], label="SAM", linestyle='--')
-                plt.plot(sgd_df["epoch"], sgd_df["accuracy"], label="SGD", linestyle='-')
+                plt.plot(sam_df["epoch"], sam_df["test_accuracy"], label="SAM", linestyle='--')
+                plt.plot(sgd_df["epoch"], sgd_df["test_accuracy"], label="SGD", linestyle='-')
                 plt.xlabel("Epoch")
                 plt.ylabel("Accuracy")
-                plt.title("SGD vs SAM Accuracy")
+                plt.title("SGD vs SAM - Test Accuracy")
                 plt.legend()
                 plt.grid(True)
-                plt.savefig(os.path.join(self.log_dir, "comparison_accuracy.png"))
+                plt.savefig(os.path.join(self.log_dir, "comparison_test_accuracy.png"))
                 plt.close()
 
                 plt.figure(figsize=(10, 5))
-                plt.plot(sam_df["epoch"], sam_df["loss"], label="SAM", linestyle='--')
-                plt.plot(sgd_df["epoch"], sgd_df["loss"], label="SGD", linestyle='-')
+                plt.plot(sam_df["epoch"], sam_df["test_loss"], label="SAM", linestyle='--')
+                plt.plot(sgd_df["epoch"], sgd_df["test_loss"], label="SGD", linestyle='-')
                 plt.xlabel("Epoch")
                 plt.ylabel("Loss")
-                plt.title("SGD vs SAM Loss")
+                plt.title("SGD vs SAM Test Loss")
                 plt.legend()
                 plt.grid(True)
-                plt.savefig(os.path.join(self.log_dir, "comparison_loss.png"))
+                plt.savefig(os.path.join(self.log_dir, "comparison_test_loss.png"))
                 plt.close()
         except Exception as e:
             print(f"[PlotComparisonError] {e}")
+            
+    def _time(self) -> str:
+        elapsed_seconds = int(time.time() - self.start_time)
+        return f"{elapsed_seconds // 60:02d}:{elapsed_seconds % 60:02d} min"
+
