@@ -181,8 +181,8 @@ if __name__ == "__main__":
     log_sam = Log(log_each=10, log_file="evaluation_sam.csv", model_name="model_sam.pth")
     train(model_sam, optimizer_sam, scheduler_sam, dataset, args, log_sam, use_sam=True)
 
-    #print("\n>>> Grid Search for SAM rho")
-    #grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1])
+    print("\n>>> Grid Search for SAM rho")
+    grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1])
     
     print(f"\nFinal Accuracy SGD:  {log_sgd.best_accuracy * 100:.2f}%")
     print(f"Final Accuracy SAM:  {log_sam.best_accuracy * 100:.2f}%")
