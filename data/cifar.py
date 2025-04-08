@@ -7,7 +7,7 @@ from utility.cutout import Cutout
 
 class Cifar:
     def __init__(self, batch_size, threads):
-        mean, std = self._get_statistics()
+        mean, std = self._get_sstatistics()
 
         train_transform = transforms.Compose([
             torchvision.transforms.RandomCrop(size=(32, 32), padding=4),

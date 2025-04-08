@@ -56,3 +56,34 @@ class SAM(torch.optim.Optimizer):
     def load_state_dict(self, state_dict):
         super().load_state_dict(state_dict)
         self.base_optimizer.param_groups = self.param_groups
+        
+def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1]):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    results = []
+
+    for rho in rhos:
+        print(f"\n>>> Training SAM with rho = {rho}")
+        model = model_fn(num_classes=10).to(device)
+
+        base_optimizer = torch.optim.SGD
+        optimizer = SAM(
+            model.parameters(),
+            base_optimizer,
+            rho=rho,
+            adaptive=False,
+            lr=args.learning_rate,
+            momentum=args.momentum,
+            weight_decay=args.weight_decay
+        )
+        scheduler = StepLR(optimizer.base_optimizer, args.learning_rate, args.epochs)
+
+        log_file = f"evaluation_sam_rho_{rho:.3f}.csv"
+        model_name = f"model_sam_rho_{rho:.3f}.pth"
+        log = Log(log_each=10, log_file=log_file, model_name=model_name, algorithm_name=f"SAM_rho_{rho:.3f}")
+        train(model, optimizer, scheduler, dataset, args, log, use_sam=True)
+
+        results.append((rho, log.best_accuracy))
+
+    best_rho, best_acc = max(results, key=lambda x: x[1])
+    print(f"\n[GRID SEARCH] Best rho: {best_rho:.3f} with Validation Accuracy: {best_acc*100:.2f}%")
+    return best_rho, best_acc

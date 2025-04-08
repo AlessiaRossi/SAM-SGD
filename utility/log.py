@@ -18,32 +18,41 @@ def disable_running_stats(model):
             module.eval()
 
 
-
 class Log:
     def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth", algorithm_name=""):
-        self.best_accuracy = 0.0
-        self.best_f1 = 0.0
+        self.best_metrics = {
+            "epoch": -1,
+            "val_loss": float("inf"),
+            "val_accuracy": 0.0,
+            "val_precision": 0.0,
+            "val_recall": 0.0,
+            "val_f1": 0.0,
+            "test_loss": float("inf"),
+            "test_accuracy": 0.0,
+            "test_precision": 0.0,
+            "test_recall": 0.0,
+            "test_f1": 0.0,
+        }
         self.log_each = log_each
         self.epoch = initial_epoch
         self.log_dir = log_dir
         self.log_file = os.path.join(log_dir, log_file)
         self.best_model_path = os.path.join(log_dir, model_name)
         self.model_name = model_name
-        self.log_data = []
         self.algorithm_name = algorithm_name
-        self.val_metrics = {}
-        self.test_metrics = {}
 
         os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
 
+        # Inizializza il file CSV con l'intestazione
         with open(self.log_file, mode='w', newline='') as f:
             writer = csv.writer(f)
-            writer.writerow(["epoch", "val_loss", "val_accuracy", "test_loss", "test_accuracy"])
+            writer.writerow([
+                "epoch", "val_loss", "val_accuracy", "val_precision", "val_recall", "val_f1",
+                "test_loss", "test_accuracy", "test_precision", "test_recall", "test_f1"
+            ])
 
     def train(self, len_dataset: int) -> None:
         self.epoch += 1
-        if self.epoch == 0:
-            self._print_header()
         self.is_train = True
         self._reset(len_dataset)
 
@@ -59,7 +68,6 @@ class Log:
             self.learning_rate = learning_rate
             self._save_if_best(model)
 
-
     def flush(self) -> None:
         if not hasattr(self, "epoch_state") or self.is_train or self.epoch_state["steps"] == 0:
             return
@@ -72,42 +80,63 @@ class Log:
         f1 = f1_score(y_true, y_pred, average='macro') if len(y_true) > 0 else 0.0
         precision = precision_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
         recall = recall_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
-
+        
         if self.eval_label == "Validation":
-            self.val_metrics = {"loss": loss, "accuracy": accuracy}
-            if accuracy > self.best_accuracy:
-                self.best_accuracy = accuracy
+            if accuracy > self.best_metrics["val_accuracy"]:
+                self.best_metrics.update({
+                    "epoch": self.epoch,
+                    "val_loss": loss,
+                    "val_accuracy": accuracy,
+                    "val_precision": precision,
+                    "val_recall": recall,
+                    "val_f1": f1,
+                })
 
         elif self.eval_label == "Test":
-            self.test_metrics = {"loss": loss, "accuracy": accuracy}
+            self.best_metrics.update({
+                "test_loss": loss,
+                "test_accuracy": accuracy,
+                "test_precision": precision,
+                "test_recall": recall,
+                "test_f1": f1,
+            })
 
-        if hasattr(self, "val_metrics") and hasattr(self, "test_metrics"):
-            val_loss = self.val_metrics.get("loss") if hasattr(self, "val_metrics") else None
-            val_acc = self.val_metrics.get("accuracy") if hasattr(self, "val_metrics") else None
-            test_loss = self.test_metrics.get("loss", 0.0)
-            test_acc = self.test_metrics.get("accuracy", 0.0)
-
-            if val_loss is None or val_acc is None:
-                print(f"[WARNING] Validation metrics not available before test flush at epoch {self.epoch}.")
-                return
-
-            print(
-                f"┃{self.epoch:12d}  ┃{val_loss:12.4f}  │{100*val_acc:10.2f} %  ┃"
-                f"{test_loss:12.4f} │{100*test_acc:10.2f} %┃",
-                flush=True
-            )
-
+    def save_best_metrics(self):
+        """Salva i migliori parametri in un file CSV."""
         with open(self.log_file, mode='a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([
-                self.epoch,
-                f"{val_loss:.4f}",
-                f"{val_acc:.4f}",
-                f"{test_loss:.4f}",
-                f"{test_acc:.4f}"
+                self.best_metrics["epoch"],
+                f"{self.best_metrics['val_loss']:.4f}",
+                f"{self.best_metrics['val_accuracy']:.4f}",
+                f"{self.best_metrics['val_precision']:.4f}",
+                f"{self.best_metrics['val_recall']:.4f}",
+                f"{self.best_metrics['val_f1']:.4f}",
+                f"{self.best_metrics['test_loss']:.4f}",
+                f"{self.best_metrics['test_accuracy']:.4f}",
+                f"{self.best_metrics['test_precision']:.4f}",
+                f"{self.best_metrics['test_recall']:.4f}",
+                f"{self.best_metrics['test_f1']:.4f}",
             ])
 
+    def print_best_metrics(self):
+        """Stampa i migliori parametri in output."""
+        if self.best_metrics["epoch"] == -1:
+            print(">>> No best metrics available to print.")
+            return
 
+        print("\nBest Metrics:")
+        print(f"Epoch: {self.best_metrics['epoch']}")
+        print(f"Validation Loss: {self.best_metrics['val_loss']:.4f}")
+        print(f"Validation Accuracy: {self.best_metrics['val_accuracy']* 100:.2f}%")
+        print(f"Validation Precision: {self.best_metrics['val_precision']* 100:.2f}%")
+        print(f"Validation Recall: {self.best_metrics['val_recall']* 100:.2f}%")
+        print(f"Validation F1-Score: {self.best_metrics['val_f1']* 100:.2f}%")
+        print(f"Test Loss: {self.best_metrics['test_loss']:.4f}")
+        print(f"Test Accuracy: {self.best_metrics['test_accuracy']* 100:.2f}%")
+        print(f"Test Precision: {self.best_metrics['test_precision']* 100:.2f}%")
+        print(f"Test Recall: {self.best_metrics['test_recall']* 100:.2f}%")
+        print(f"Test F1-Score: {self.best_metrics['test_f1']* 100:.2f}%")
 
     def _eval_step(self, loss, accuracy, y_true=None, y_pred=None) -> None:
         batch_size = accuracy.size(0)
@@ -118,81 +147,9 @@ class Log:
             self.epoch_state["y_true"].extend(y_true.cpu().tolist())
             self.epoch_state["y_pred"].extend(y_pred.cpu().tolist())
 
-    def _save_if_best(self, model):
-        y_true = self.epoch_state["y_true"]
-        y_pred = self.epoch_state["y_pred"]
-        f1 = f1_score(y_true, y_pred, average='macro') if y_true and y_pred else 0.0
-        if f1 > self.best_f1:
-            self.best_f1 = f1
-            torch.save(model.state_dict(), self.best_model_path)
-
     def _reset(self, len_dataset: int) -> None:
         self.start_time = time.time()
         self.step = 0
         self.len_dataset = len_dataset
         self.epoch_state = {"loss": 0.0, "accuracy": 0.0, "steps": 0, "y_true": [], "y_pred": []}
-
-    def _print_header(self) -> None:
-        print(f"┏━━━━━━━━━━━━━━┳━━━━━━━╸V╺╸A╺╸L╺╸I╺╸D╺━━━━━━━┳━━━━━━━╸T-E-S-T╺━━━━━━━┓")
-        print(f"┃              ┃              ╷              ┃             ╷         ┃")
-        print(f"┃       epoch  ┃        loss  │    accuracy  ┃       loss  │accuracy ┃")
-        print(f"┠──────────────╂──────────────┼──────────────╂─────────────┼─────────┨")
-
-    def _plot_metrics(self):
-        if not self.log_data:
-            return
-
-        epochs, losses, accuracies, f1s, precisions, recalls = zip(*self.log_data)
-        plt.figure(figsize=(10, 5))
-        plt.plot(epochs, losses, label='Loss')
-        plt.plot(epochs, accuracies, label='Accuracy')
-        plt.plot(epochs, f1s, label='F1-score')
-        plt.plot(epochs, precisions, label='Precision')
-        plt.plot(epochs, recalls, label='Recall')
-        plt.xlabel('Epoch')
-        plt.ylabel('Metric')
-        plt.title('Validation Metrics Over Epochs')
-        plt.legend()
-        plt.grid(True)
-        filename = os.path.splitext(os.path.basename(self.model_name))[0]
-        plt.savefig(os.path.join(self.log_dir, f"metrics_plot_{filename}.png"))
-        plt.close()
-        
-    def _plot_comparison(self):
-        try:
-            import pandas as pd
-            sam_path = os.path.join(self.log_dir, "evaluation_sam.csv")
-            sgd_path = os.path.join(self.log_dir, "evaluation_sgd.csv")
-
-            if os.path.exists(sam_path) and os.path.exists(sgd_path):
-                sam_df = pd.read_csv(sam_path)
-                sgd_df = pd.read_csv(sgd_path)
-
-                plt.figure(figsize=(10, 5))
-                plt.plot(sam_df["epoch"], sam_df["test_accuracy"], label="SAM", linestyle='--')
-                plt.plot(sgd_df["epoch"], sgd_df["test_accuracy"], label="SGD", linestyle='-')
-                plt.xlabel("Epoch")
-                plt.ylabel("Accuracy")
-                plt.title("SGD vs SAM - Test Accuracy")
-                plt.legend()
-                plt.grid(True)
-                plt.savefig(os.path.join(self.log_dir, "comparison_test_accuracy.png"))
-                plt.close()
-
-                plt.figure(figsize=(10, 5))
-                plt.plot(sam_df["epoch"], sam_df["test_loss"], label="SAM", linestyle='--')
-                plt.plot(sgd_df["epoch"], sgd_df["test_loss"], label="SGD", linestyle='-')
-                plt.xlabel("Epoch")
-                plt.ylabel("Loss")
-                plt.title("SGD vs SAM Test Loss")
-                plt.legend()
-                plt.grid(True)
-                plt.savefig(os.path.join(self.log_dir, "comparison_test_loss.png"))
-                plt.close()
-        except Exception as e:
-            print(f"[PlotComparisonError] {e}")
-            
-    def _time(self) -> str:
-        elapsed_seconds = int(time.time() - self.start_time)
-        return f"{elapsed_seconds // 60:02d}:{elapsed_seconds % 60:02d} min"
 

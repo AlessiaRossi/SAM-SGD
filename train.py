@@ -10,11 +10,13 @@ from utility.log import Log
 from utility.initialize import initialize
 from utility.lr import StepLR
 from utility.bypass_bn import enable_running_stats, disable_running_stats
-from scripts.SAM import SAM
+from scripts.SAM import SAM, grid_search_sam_rho
+from utility.loss import CE_FL_Loss # Import CombinedLoss
 
-def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
+
+def train(model, optimizer, scheduler, dataset, args, log, use_sam=False, lambda_=0.5, loss_type="cross_entropy+focal_loss"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    criterion = nn.CrossEntropyLoss()
+    criterion = CE_FL_Loss(lambda_=lambda_)  # Usa la loss combinata
 
     for epoch in range(args.epochs):
         model.train()
@@ -41,7 +43,6 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
                 loss.backward()
                 optimizer.step()
 
-            
             scheduler(epoch)
 
 
@@ -76,35 +77,6 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False):
         log.flush()
         
         
-def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1]):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    results = []
-
-    for rho in rhos:
-        print(f"\n>>> Training SAM with rho = {rho}")
-        model = model_fn(num_classes=10).to(device)
-
-        base_optimizer = torch.optim.SGD
-        optimizer = SAM(
-            model.parameters(),
-            base_optimizer,
-            rho=rho,
-            adaptive=False,
-            lr=args.learning_rate,
-            momentum=args.momentum,
-            weight_decay=args.weight_decay
-        )
-        scheduler = StepLR(optimizer.base_optimizer, args.learning_rate, args.epochs)
-
-        log_file = f"evaluation_sam_rho_{rho:.3f}.csv"
-        model_name = f"model_sam_rho_{rho:.3f}.pth"
-        log = Log(log_each=10, log_file=log_file, model_name=model_name, algorithm_name=f"SAM_rho_{rho:.3f}")
-        train(model, optimizer, scheduler, dataset, args, log, use_sam=True)
-
-        results.append((rho, log.best_accuracy))
-
-    best_rho, best_acc = max(results, key=lambda x: x[1])
-    print(f"\n[GRID SEARCH] Best rho: {best_rho:.3f} with Validation Accuracy: {best_acc*100:.2f}%")
 
 
 if __name__ == "__main__":
@@ -116,6 +88,8 @@ if __name__ == "__main__":
     parser.add_argument("--momentum", default=0.9, type=float)
     parser.add_argument("--weight_decay", default=5e-4, type=float)
     parser.add_argument("--rho", default=0.05, type=float)
+    parser.add_argument("--rhos", default="0.01,0.03,0.05,0.1", type=str, help="Comma-separated list of rho values for grid search")
+    parser.add_argument("--lambda_", default=0.5, type=float, help="Weight for balancing CrossEntropy and Focal Loss")  # Nuovo argomento
     args = parser.parse_args()
 
     initialize(args, seed=42)
@@ -133,7 +107,7 @@ if __name__ == "__main__":
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
-
+    
     full_train_dataset = CIFAR10(root="./cifar", train=True, download=True, transform=transform_train)
     test_dataset = CIFAR10(root="./cifar", train=False, download=True, transform=transform_test)
     
@@ -154,15 +128,14 @@ if __name__ == "__main__":
         110: ResNet110,
     }
     model_fn = resnet_versions.get(args.depth)'''
+    
     wresnet_versions = {
         2: WRN56_2,
         4:WRN56_4,
         8:WRN56_8
     }
+   
     model_fn = wresnet_versions.get(args.depth)
-
-
-
     if model_fn is None:
         raise ValueError(f"Unsupported depth {args.depth}")
 
@@ -171,7 +144,9 @@ if __name__ == "__main__":
     optimizer_sgd = torch.optim.SGD(model_sgd.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler_sgd = StepLR(optimizer_sgd, args.learning_rate, args.epochs)
     log_sgd = Log(log_each=10, log_file="evaluation_sgd.csv", model_name="model_sgd.pth")
-    train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False)
+    train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False, lambda_=args.lambda_, loss_type="cross_entropy+focal_loss")
+    log_sgd.save_best_metrics()
+    log_sgd.print_best_metrics()
 
     print("\n>>> Training with SAM")
     model_sam = model_fn(num_classes=10).to(device)
@@ -179,10 +154,14 @@ if __name__ == "__main__":
     optimizer_sam = SAM(model_sam.parameters(), base_optimizer, rho=args.rho, adaptive=False, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler_sam = StepLR(optimizer_sam.base_optimizer, args.learning_rate, args.epochs)
     log_sam = Log(log_each=10, log_file="evaluation_sam.csv", model_name="model_sam.pth")
-    train(model_sam, optimizer_sam, scheduler_sam, dataset, args, log_sam, use_sam=True)
+    train(model_sam, optimizer_sam, scheduler_sam, dataset, args, log_sam, use_sam=True, lambda_=args.lambda_, loss_type="cross_entropy+focal_loss")
+    log_sam.save_best_metrics()
+    log_sam.print_best_metrics() 
 
-    print("\n>>> Grid Search for SAM rho")
-    grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1])
+    #print("\n>>> Grid Search for SAM rho")
+    #best_rho, best_acc = grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1])
+    #print(f"\nBest rho: {best_rho} with Validation Accuracy: {best_acc * 100:.2f}%")
+
     
-    print(f"\nFinal Accuracy SGD:  {log_sgd.best_accuracy * 100:.2f}%")
-    print(f"Final Accuracy SAM:  {log_sam.best_accuracy * 100:.2f}%")
+    print(f"\nFinal Accuracy SGD:  {log_sgd.best_metrics['test_accuracy'] * 100:.2f}%")
+    print(f"Final Accuracy SAM:  {log_sam.best_metrics['test_accuracy'] * 100:.2f}%")
