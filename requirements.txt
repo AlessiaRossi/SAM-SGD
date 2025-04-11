@@ -4,3 +4,5 @@ torchvision
 argparse
 matplotlib
 scikit-learn
+optuna
+

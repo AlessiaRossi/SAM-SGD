@@ -19,7 +19,7 @@ def disable_running_stats(model):
 
 
 class Log:
-    def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth", algorithm_name=""):
+    def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", log_file="training_log.csv", model_name="model.pth", algorithm_name="", lambda_value=None, optimize_lambda=False):
         self.best_metrics = {
             "epoch": -1,
             "val_loss": float("inf"),
@@ -40,8 +40,10 @@ class Log:
         self.best_model_path = os.path.join(log_dir, model_name)
         self.model_name = model_name
         self.algorithm_name = algorithm_name
+        self.lambda_value = lambda_value
+        self.optimize_lambda = optimize_lambda
 
-        os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+        os.makedirs(self.log_dir, exist_ok=True)
 
         # Inizializza il file CSV con l'intestazione
         with open(self.log_file, mode='w', newline='') as f:
@@ -80,7 +82,7 @@ class Log:
         f1 = f1_score(y_true, y_pred, average='macro') if len(y_true) > 0 else 0.0
         precision = precision_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
         recall = recall_score(y_true, y_pred, average='macro', zero_division=0) if len(y_true) > 0 else 0.0
-        
+
         if self.eval_label == "Validation":
             if accuracy > self.best_metrics["val_accuracy"]:
                 self.best_metrics.update({
@@ -128,15 +130,16 @@ class Log:
         print("\nBest Metrics:")
         print(f"Epoch: {self.best_metrics['epoch']}")
         print(f"Validation Loss: {self.best_metrics['val_loss']:.4f}")
-        print(f"Validation Accuracy: {self.best_metrics['val_accuracy']* 100:.2f}%")
-        print(f"Validation Precision: {self.best_metrics['val_precision']* 100:.2f}%")
-        print(f"Validation Recall: {self.best_metrics['val_recall']* 100:.2f}%")
-        print(f"Validation F1-Score: {self.best_metrics['val_f1']* 100:.2f}%")
+        print(f"Validation Accuracy: {self.best_metrics['val_accuracy'] * 100:.2f}%")
+        print(f"Validation Precision: {self.best_metrics['val_precision'] * 100:.2f}%")
+        print(f"Validation Recall: {self.best_metrics['val_recall'] * 100:.2f}%")
+        print(f"Validation F1-Score: {self.best_metrics['val_f1'] * 100:.2f}%")
         print(f"Test Loss: {self.best_metrics['test_loss']:.4f}")
-        print(f"Test Accuracy: {self.best_metrics['test_accuracy']* 100:.2f}%")
-        print(f"Test Precision: {self.best_metrics['test_precision']* 100:.2f}%")
-        print(f"Test Recall: {self.best_metrics['test_recall']* 100:.2f}%")
-        print(f"Test F1-Score: {self.best_metrics['test_f1']* 100:.2f}%")
+        print(f"Test Accuracy: {self.best_metrics['test_accuracy'] * 100:.2f}%")
+        print(f"Test Precision: {self.best_metrics['test_precision'] * 100:.2f}%")
+        print(f"Test Recall: {self.best_metrics['test_recall'] * 100:.2f}%")
+        print(f"Test F1-Score: {self.best_metrics['test_f1'] * 100:.2f}%")
+        print(f"Lambda: {self.lambda_value}")
 
     def _eval_step(self, loss, accuracy, y_true=None, y_pred=None) -> None:
         batch_size = accuracy.size(0)

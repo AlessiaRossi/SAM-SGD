@@ -1,4 +1,9 @@
 import torch
+from utility.lr import StepLR
+from utility.log import Log  # Import Log
+import csv  # Import csv module
+
+
 
 class SAM(torch.optim.Optimizer):
     def __init__(self, params, base_optimizer, rho=0.05, adaptive=False, **kwargs):
@@ -57,9 +62,30 @@ class SAM(torch.optim.Optimizer):
         super().load_state_dict(state_dict)
         self.base_optimizer.param_groups = self.param_groups
         
-def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1]):
+def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], save_results=True):
+    """
+    Esegue una ricerca a griglia sui valori di rho per l'ottimizzatore SAM.
+
+    Args:
+        model_fn: Funzione per creare il modello.
+        dataset: Dataset suddiviso in train, val e test.
+        args: Argomenti di configurazione.
+        rhos: Lista di valori di rho da testare.
+        save_results: Se True, salva i risultati in un file CSV.
+
+    Returns:
+        best_rho: Il valore di rho con la migliore accuratezza di validazione.
+        best_acc: La migliore accuratezza di validazione.
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     results = []
+
+    # File per salvare i risultati
+    results_file = "grid_search_sam_results.csv" if save_results else None
+    if save_results:
+        with open(results_file, mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["rho", "val_accuracy", "test_accuracy", "lambda_used"])
 
     for rho in rhos:
         print(f"\n>>> Training SAM with rho = {rho}")
@@ -79,11 +105,30 @@ def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1]):
 
         log_file = f"evaluation_sam_rho_{rho:.3f}.csv"
         model_name = f"model_sam_rho_{rho:.3f}.pth"
-        log = Log(log_each=10, log_file=log_file, model_name=model_name, algorithm_name=f"SAM_rho_{rho:.3f}")
-        train(model, optimizer, scheduler, dataset, args, log, use_sam=True)
+        log = Log(
+            log_each=10,
+            log_file=log_file,
+            model_name=model_name,
+            algorithm_name=f"SAM_rho_{rho:.3f}",
+            lambda_value=args.lambda_,
+            optimize_lambda=args.optimize_lambda
+        )
 
-        results.append((rho, log.best_accuracy))
+        # Esegui il training
+        train(model, optimizer, scheduler, dataset, args, log, use_sam=True, lambda_=args.lambda_)
 
-    best_rho, best_acc = max(results, key=lambda x: x[1])
-    print(f"\n[GRID SEARCH] Best rho: {best_rho:.3f} with Validation Accuracy: {best_acc*100:.2f}%")
-    return best_rho, best_acc
+        # Salva i risultati
+        val_acc = log.best_metrics["val_accuracy"]
+        test_acc = log.best_metrics["test_accuracy"]
+        results.append((rho, val_acc, test_acc))
+        print(f"Rho: {rho:.3f}, Validation Accuracy: {val_acc*100:.2f}%, Test Accuracy: {test_acc*100:.2f}%")
+
+        if save_results:
+            with open(results_file, mode="a", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow([rho, val_acc, test_acc, args.lambda_])
+
+    # Trova il miglior rho
+    best_rho, best_val_acc, best_test_acc = max(results, key=lambda x: x[1])
+    print(f"\n[GRID SEARCH] Best rho: {best_rho:.3f} with Validation Accuracy: {best_val_acc*100:.2f}% and Test Accuracy: {best_test_acc*100:.2f}%")
+    return best_rho, best_val_acc
