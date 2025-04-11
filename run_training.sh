@@ -24,4 +24,7 @@ python train.py \
     --weight_decay 5e-4 \
     --rho 0.05 \
     --lambda_ 0.7 \
+    --lambda_range 0,1,0.2 \
+    --dataset cifar10 \
     --optimize_lambda
+ 

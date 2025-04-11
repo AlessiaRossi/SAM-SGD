@@ -43,18 +43,21 @@ class LambdaOptimizer:
     """
     Classe per eseguire il training e visualizzare le metriche al variare di lambda.
     """
-    def __init__(self, train_fn, dataset, model, optimizer, scheduler, args, step=0.2):
+    def __init__(self, train_fn, dataset, model, optimizer, scheduler, args, lambda_start=0.0, lambda_end=1.0, lambda_step=0.2):
         self.train_fn = train_fn
         self.dataset = dataset
         self.model = model
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.args = args
-        self.step = step
+        self.lambda_start = lambda_start
+        self.lambda_end = lambda_end
+        self.lambda_step = lambda_step
 
     def run(self):
-        # Loop su valori di lambda nell'intervallo [0, 1] con step definito
-        for lambda_ in [round(i * self.step, 2) for i in range(int(1 / self.step) + 1)]:
+        # Loop su valori di lambda nell'intervallo definito
+        lambda_values = [round(i, 2) for i in torch.arange(self.lambda_start, self.lambda_end + self.lambda_step, self.lambda_step).tolist()]
+        for lambda_ in lambda_values:
             print(f"\n>>> Testing lambda = {lambda_}")
 
             # Inizializza il logger per il valore corrente di lambda

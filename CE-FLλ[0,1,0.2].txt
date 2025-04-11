@@ -1,4 +1,18 @@
 This job can be monitored from: https://job.c3se.chalmers.se/alvis/4010220
+Configuration: 
+python train.py \
+    --batch_size 128 \
+    --depth 2 \
+    --epochs 10 \
+    --learning_rate 0.1 \
+    --momentum 0.9 \
+    --weight_decay 5e-4 \
+    --rho 0.05 \
+    --lambda_ 0.7 \
+    --lambda_range 0,1,0.2 \
+    --dataset cifar10 \
+    --optimize_lambda
+ 
 >>> Training with SGD
 
 >>> Testing lambda = 0.0

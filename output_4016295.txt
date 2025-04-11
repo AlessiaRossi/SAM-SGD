@@ -1,0 +1,101 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4016295
+CROSS ENTRPOPY AND FOCAL LOSS, Lambda [0,1,0.2], SAM, NO rho OPTIMIZER
+Configuration: 
+python train.py \
+    --batch_size 128 \
+    --depth 2 \
+    --epochs 10 \
+    --learning_rate 0.1 \
+    --momentum 0.9 \
+    --weight_decay 5e-4 \
+    --rho 0.05 \
+    --lambda_ 0.7 \
+    --lambda_range 0,1,0.2 \
+    --dataset cifar10 \
+    --optimize_lambda
+ 
+>>> Training with SAM
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0084
+Validation Accuracy: 57.72%
+Validation Precision: 57.28%
+Validation Recall: 57.55%
+Validation F1-Score: 57.34%
+Test Loss: 0.0081
+Test Accuracy: 58.77%
+Test Precision: 58.11%
+Test Recall: 58.77%
+Test F1-Score: 58.16%
+Lambda: 0.0
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0077
+Validation Accuracy: 60.94%
+Validation Precision: 60.50%
+Validation Recall: 60.80%
+Validation F1-Score: 60.48%
+Test Loss: 0.0074
+Test Accuracy: 62.32%
+Test Precision: 61.96%
+Test Recall: 62.32%
+Test F1-Score: 61.98%
+Lambda: 0.2
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0087
+Validation Accuracy: 56.18%
+Validation Precision: 55.71%
+Validation Recall: 56.01%
+Validation F1-Score: 55.77%
+Test Loss: 0.0084
+Test Accuracy: 56.70%
+Test Precision: 56.29%
+Test Recall: 56.70%
+Test F1-Score: 56.38%
+Lambda: 0.4
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0070
+Validation Accuracy: 63.90%
+Validation Precision: 63.47%
+Validation Recall: 63.71%
+Validation F1-Score: 63.53%
+Test Loss: 0.0068
+Test Accuracy: 65.34%
+Test Precision: 65.35%
+Test Recall: 65.34%
+Test F1-Score: 65.06%
+Lambda: 0.6
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0067
+Validation Accuracy: 65.62%
+Validation Precision: 65.55%
+Validation Recall: 65.51%
+Validation F1-Score: 65.48%
+Test Loss: 0.0064
+Test Accuracy: 67.43%
+Test Precision: 67.26%
+Test Recall: 67.43%
+Test F1-Score: 67.23%
+Lambda: 0.8
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0083
+Validation Accuracy: 58.40%
+Validation Precision: 57.92%
+Validation Recall: 58.19%
+Validation F1-Score: 57.97%
+Test Loss: 0.0081
+Test Accuracy: 58.69%
+Test Precision: 58.90%
+Test Recall: 58.69%
+Test F1-Score: 58.43%
+Lambda: 1.0
