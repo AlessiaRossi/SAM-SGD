@@ -11,7 +11,7 @@ from utility.initialize import initialize
 from utility.lr import StepLR
 from utility.bypass_bn import enable_running_stats, disable_running_stats
 from scripts.SAM import SAM, grid_search_sam_rho
-from utility.loss import CE_FL_Loss
+from utility.loss import CombinedLoss, FocalLoss, LogitNormLoss, TRADESLoss
 
 def _train_epoch(model, dataloader, optimizer, scheduler, criterion, device, log, use_sam):
     model.train()
@@ -58,7 +58,13 @@ def _evaluate(model, dataloader, criterion, device, log, split_name):
 def train(model, optimizer, scheduler, dataset, args, log, use_sam=False, lambda_optimizer=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lambda_value = lambda_optimizer.current_lambda if lambda_optimizer else args.lambda_
-    criterion = CE_FL_Loss(lambda_=lambda_value)
+
+    # Definizione delle funzioni di perdita
+    ce_loss = nn.CrossEntropyLoss()
+    #focal_loss = FocalLoss(gamma=2, alpha=0.25)  # Configura Focal Loss con gamma e alpha
+    #criterion = CombinedLoss(loss1=ce_loss, loss2=focal_loss, lambda_=lambda_value)
+    logitnorm_loss = LogitNormLoss(device=device, t=1.0)  # Configura LogitNormLoss con temperatura t=1.0
+    criterion = CombinedLoss(loss1=ce_loss, loss2=logitnorm_loss, lambda_=lambda_value)
 
     for _ in range(args.epochs):
         _train_epoch(model, dataset["train"], optimizer, scheduler, criterion, device, log, use_sam)
@@ -153,6 +159,6 @@ if __name__ == "__main__":
         log_sam.save_best_metrics()
         log_sam.print_best_metrics()
 
-    '''print(">>> Grid Search for SAM rho")
-    best_rho, best_acc = grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1])
-    print(f"\nBest rho: {best_rho} with Validation Accuracy: {best_acc * 100:.2f}%") '''
+    print(">>> Grid Search for SAM rho")
+    best_rho, best_acc = grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], train_fn=train)
+    print(f"\nBest rho: {best_rho} with Validation Accuracy: {best_acc * 100:.2f}%")

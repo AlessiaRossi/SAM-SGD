@@ -1,0 +1,103 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4021016
+>>> Training with SAM
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0101
+Validation Accuracy: 64.30%
+Validation Precision: 63.76%
+Validation Recall: 64.17%
+Validation F1-Score: 63.91%
+Test Loss: 0.0099
+Test Accuracy: 64.26%
+Test Precision: 63.90%
+Test Recall: 64.26%
+Test F1-Score: 63.77%
+Lambda: 0.0
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0109
+Validation Accuracy: 59.28%
+Validation Precision: 58.38%
+Validation Recall: 59.13%
+Validation F1-Score: 58.56%
+Test Loss: 0.0106
+Test Accuracy: 60.38%
+Test Precision: 60.13%
+Test Recall: 60.38%
+Test F1-Score: 60.16%
+Lambda: 0.2
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0083
+Validation Accuracy: 74.44%
+Validation Precision: 74.15%
+Validation Recall: 74.28%
+Validation F1-Score: 74.20%
+Test Loss: 0.0083
+Test Accuracy: 74.21%
+Test Precision: 73.99%
+Test Recall: 74.21%
+Test F1-Score: 74.08%
+Lambda: 0.4
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0082
+Validation Accuracy: 74.28%
+Validation Precision: 74.11%
+Validation Recall: 74.13%
+Validation F1-Score: 74.10%
+Test Loss: 0.0082
+Test Accuracy: 74.39%
+Test Precision: 74.21%
+Test Recall: 74.39%
+Test F1-Score: 74.27%
+Lambda: 0.6
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0080
+Validation Accuracy: 75.88%
+Validation Precision: 75.71%
+Validation Recall: 75.78%
+Validation F1-Score: 75.71%
+Test Loss: 0.0078
+Test Accuracy: 76.81%
+Test Precision: 76.69%
+Test Recall: 76.81%
+Test F1-Score: 76.67%
+Lambda: 0.8
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0089
+Validation Accuracy: 70.26%
+Validation Precision: 70.11%
+Validation Recall: 70.14%
+Validation F1-Score: 70.09%
+Test Loss: 0.0088
+Test Accuracy: 70.72%
+Test Precision: 70.52%
+Test Recall: 70.72%
+Test F1-Score: 70.53%
+Lambda: 1.0
+>>> Grid Search for SAM rho
+
+>>> Training SAM with rho = 0.01
+Rho: 0.010, Validation Accuracy: 72.56%, Test Accuracy: 73.16%
+
+>>> Training SAM with rho = 0.03
+Rho: 0.030, Validation Accuracy: 70.84%, Test Accuracy: 71.47%
+
+>>> Training SAM with rho = 0.05
+Rho: 0.050, Validation Accuracy: 69.42%, Test Accuracy: 70.44%
+
+>>> Training SAM with rho = 0.1
+Rho: 0.100, Validation Accuracy: 66.06%, Test Accuracy: 67.06%
+
+[GRID SEARCH] Best rho: 0.010 with Validation Accuracy: 72.56% and Test Accuracy: 73.16%
+
+Best rho: 0.01 with Validation Accuracy: 72.56%

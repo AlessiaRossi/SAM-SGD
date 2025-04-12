@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utility.log import Log
 from utility.lr import StepLR
+import torch.optim as optim
 
 
 class FocalLoss(nn.Module):
@@ -14,8 +15,8 @@ class FocalLoss(nn.Module):
         self.reduction = reduction
 
     def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
-        pt = torch.exp(-ce_loss)  # Probabilità predetta
+        ce_loss = F.cross_entropy(inputs, targets, reduction='none')  # classifica multi-classe
+        pt = torch.exp(-ce_loss)
         focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss
 
         if self.reduction == 'mean':
@@ -26,17 +27,94 @@ class FocalLoss(nn.Module):
             return focal_loss
 
 
-class CE_FL_Loss(nn.Module):
-    def __init__(self, lambda_=1.0):
-        super(CE_FL_Loss, self).__init__()
+class LogitNormLoss(nn.Module):
+    def __init__(self, device, t=1.0):
+        super(LogitNormLoss, self).__init__()
+        self.device = device
+        self.t = t
+
+    def forward(self, x, target):
+        norms = torch.norm(x, p=2, dim=-1, keepdim=True) + 1e-7
+        logit_norm = torch.div(x, norms) / self.t
+        return F.cross_entropy(logit_norm, target)
+
+def squared_l2_norm(x):
+    flattened = x.view(x.size(0), -1)
+    return (flattened ** 2).sum(1)
+
+
+def l2_norm(x):
+    return squared_l2_norm(x).sqrt()
+
+
+class TRADESLoss(nn.Module):
+    def __init__(self, model, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=1.0, distance='l_inf'):
+        super(TRADESLoss, self).__init__()
+        self.model = model
+        self.optimizer = optimizer
+        self.step_size = step_size
+        self.epsilon = epsilon
+        self.perturb_steps = perturb_steps
+        self.beta = beta
+        self.distance = distance
+        self.kl_div = nn.KLDivLoss(reduction='batchmean')
+
+    def forward(self, x_natural, y):
+        batch_size = len(x_natural)
+        self.model.eval()
+        x_adv = x_natural.detach() + 0.001 * torch.randn_like(x_natural).cuda().detach()
+
+        if self.distance == 'l_inf':
+            for _ in range(self.perturb_steps):
+                x_adv.requires_grad_()
+                with torch.enable_grad():
+                    loss_kl = self.kl_div(F.log_softmax(self.model(x_adv), dim=1),
+                                           F.softmax(self.model(x_natural), dim=1))
+                grad = torch.autograd.grad(loss_kl, [x_adv])[0]
+                x_adv = x_adv.detach() + self.step_size * torch.sign(grad.detach())
+                x_adv = torch.min(torch.max(x_adv, x_natural - self.epsilon), x_natural + self.epsilon)
+                x_adv = torch.clamp(x_adv, 0.0, 1.0)
+        elif self.distance == 'l_2':
+            delta = 0.001 * torch.randn_like(x_natural).cuda().detach()
+            delta.requires_grad_()
+            optimizer_delta = optim.SGD([delta], lr=self.epsilon / self.perturb_steps * 2)
+
+            for _ in range(self.perturb_steps):
+                adv = x_natural + delta
+                optimizer_delta.zero_grad()
+                with torch.enable_grad():
+                    loss = -self.kl_div(F.log_softmax(self.model(adv), dim=1),
+                                        F.softmax(self.model(x_natural), dim=1))
+                loss.backward()
+                grad_norms = delta.grad.view(batch_size, -1).norm(p=2, dim=1)
+                delta.grad.div_(grad_norms.view(-1, 1, 1, 1))
+                delta.grad[grad_norms == 0] = torch.randn_like(delta.grad[grad_norms == 0])
+                optimizer_delta.step()
+                delta.data.add_(x_natural)
+                delta.data.clamp_(0, 1).sub_(x_natural)
+                delta.data.renorm_(p=2, dim=0, maxnorm=self.epsilon)
+            x_adv = (x_natural + delta).detach()
+        else:
+            x_adv = torch.clamp(x_adv, 0.0, 1.0)
+
+        self.model.train()
+        x_adv = torch.clamp(x_adv, 0.0, 1.0).detach()
+        self.optimizer.zero_grad()
+        loss_natural = F.cross_entropy(self.model(x_natural), y)
+        loss_robust = self.kl_div(F.log_softmax(self.model(x_adv), dim=1),
+                                  F.softmax(self.model(x_natural), dim=1)) / batch_size
+        return loss_natural + self.beta * loss_robust
+
+
+class CombinedLoss(nn.Module):
+    def __init__(self, loss1: nn.Module, loss2: nn.Module, lambda_: float = 0.5):
+        super(CombinedLoss, self).__init__()
+        self.loss1 = loss1
+        self.loss2 = loss2
         self.lambda_ = lambda_
-        self.cross_entropy = nn.CrossEntropyLoss()
-        self.focal_loss = FocalLoss()
 
     def forward(self, inputs, targets):
-        ce_loss = self.cross_entropy(inputs, targets)
-        focal_loss = self.focal_loss(inputs, targets)
-        return self.lambda_ * ce_loss + (1 - self.lambda_) * focal_loss
+        return self.lambda_ * self.loss1(inputs, targets) + (1 - self.lambda_) * self.loss2(inputs, targets)
 
 
 class LambdaOptimizer:

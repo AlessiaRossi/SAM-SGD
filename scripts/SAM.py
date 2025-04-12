@@ -62,7 +62,7 @@ class SAM(torch.optim.Optimizer):
         super().load_state_dict(state_dict)
         self.base_optimizer.param_groups = self.param_groups
         
-def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], save_results=True):
+def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], save_results=True, train_fn=None):
     """
     Esegue una ricerca a griglia sui valori di rho per l'ottimizzatore SAM.
 
@@ -115,7 +115,8 @@ def grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], s
         )
 
         # Esegui il training
-        train(model, optimizer, scheduler, dataset, args, log, use_sam=True, lambda_=args.lambda_)
+        train_fn(model, optimizer, scheduler, dataset, args, log, use_sam=True)
+
 
         # Salva i risultati
         val_acc = log.best_metrics["val_accuracy"]
