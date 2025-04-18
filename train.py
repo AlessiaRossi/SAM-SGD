@@ -1,44 +1,42 @@
-# train.py (complete: dataset, SAM, Grid Search, lambda_range support for both optimizers)
+# train.py (aggiornato: esegue anche plot_weight_analysis.py alla fine)
 import argparse
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms, datasets
 from torch.utils.data import random_split
+from torch.optim.lr_scheduler import StepLR
 from model.Net import WRN56_2, WRN56_4, WRN56_8
 from utility.log import Log
 from utility.initialize import initialize
-from utility.lr import StepLR
 from utility.bypass_bn import enable_running_stats, disable_running_stats
-from scripts.SAM import SAM, grid_search_sam_rho
-from utility.loss import CombinedLoss, FocalLoss, LogitNormLoss, TRADESLoss
+from scripts.SAM import SAM
+from utility.loss import CombinedLoss, FocalLoss, LogitNormLoss, TRADESLoss, HuberLoss
+import subprocess
+
 
 def _train_epoch(model, dataloader, optimizer, scheduler, criterion, device, log, use_sam):
     model.train()
     log.train(len_dataset=len(dataloader))
-
     for inputs, targets in dataloader:
         inputs, targets = inputs.to(device), targets.to(device)
-
         if use_sam:
             enable_running_stats(model)
-            predictions = model(inputs)
-            loss = criterion(predictions, targets)
+            loss = criterion(model, inputs, targets)
             loss.backward()
             optimizer.first_step(zero_grad=True)
 
             disable_running_stats(model)
-            predictions = model(inputs)
-            criterion(predictions, targets).backward()
+            loss = criterion(model, inputs, targets)
+            loss.backward()
             optimizer.second_step(zero_grad=True)
         else:
             optimizer.zero_grad()
-            predictions = model(inputs)
-            loss = criterion(predictions, targets)
+            loss = criterion(model, inputs, targets)
             loss.backward()
             optimizer.step()
+    scheduler.step()
 
-        scheduler(log.epoch)
 
 def _evaluate(model, dataloader, criterion, device, log, split_name):
     model.eval()
@@ -47,29 +45,41 @@ def _evaluate(model, dataloader, criterion, device, log, split_name):
         for inputs, targets in dataloader:
             inputs, targets = inputs.to(device), targets.to(device)
             predictions = model(inputs)
-            loss = criterion(predictions, targets)
+            loss = criterion(model, inputs, targets)
             preds = predictions.argmax(dim=1)
             accuracy = (preds == targets).float().mean()
-            batch_size = targets.size(0)
-            acc_tensor = accuracy.repeat(batch_size)
+            acc_tensor = accuracy.repeat(targets.size(0))
             log(model, loss.cpu(), acc_tensor.cpu(), y_true=targets.cpu(), y_pred=preds.cpu())
     log.flush()
+
 
 def train(model, optimizer, scheduler, dataset, args, log, use_sam=False, lambda_optimizer=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     lambda_value = lambda_optimizer.current_lambda if lambda_optimizer else args.lambda_
-
-    # Definizione delle funzioni di perdita
     ce_loss = nn.CrossEntropyLoss()
-    #focal_loss = FocalLoss(gamma=2, alpha=0.25)  # Configura Focal Loss con gamma e alpha
-    #criterion = CombinedLoss(loss1=ce_loss, loss2=focal_loss, lambda_=lambda_value)
-    logitnorm_loss = LogitNormLoss(device=device, t=1.0)  # Configura LogitNormLoss con temperatura t=1.0
-    criterion = CombinedLoss(loss1=ce_loss, loss2=logitnorm_loss, lambda_=lambda_value)
+
+    if args.loss_type == "focal":
+        focal_loss = FocalLoss(gamma=2, alpha=0.25)
+        criterion = CombinedLoss(loss1=ce_loss, loss2=focal_loss, lambda_=lambda_value)
+    elif args.loss_type == "logitnorm":
+        logitnorm_loss = LogitNormLoss(device=device, t=1.0)
+        criterion = CombinedLoss(loss1=ce_loss, loss2=logitnorm_loss, lambda_=lambda_value)
+    elif args.loss_type == "trades":
+        trades_loss = TRADESLoss(model=model, optimizer=optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=6.0, distance='l_inf')
+        criterion = CombinedLoss(loss1=ce_loss, loss2=trades_loss, lambda_=lambda_value)
+    elif args.loss_type == "huber":
+        huber_loss = HuberLoss(delta=1.0)
+        criterion = CombinedLoss(loss1=ce_loss, loss2=huber_loss, lambda_=lambda_value)
+    else:
+        raise ValueError(f"Loss type '{args.loss_type}' non supportata.")
 
     for _ in range(args.epochs):
         _train_epoch(model, dataset["train"], optimizer, scheduler, criterion, device, log, use_sam)
         _evaluate(model, dataset["val"], criterion, device, log, "Validation")
         _evaluate(model, dataset["test"], criterion, device, log, "Test")
+
+    log.attach_robust_metrics(model, dataset["test"], device, ce_loss)
+
 
 def load_dataset(name, batch_size):
     transform_train = transforms.Compose([
@@ -99,10 +109,12 @@ def load_dataset(name, batch_size):
     val_size = len(full_train_dataset) - train_size
     train_dataset, val_dataset = random_split(full_train_dataset, [train_size, val_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
-    return {"train": train_loader, "val": val_loader, "test": test_loader}, num_classes
+    return {
+        "train": DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2),
+        "val": DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2),
+        "test": DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2),
+    }, num_classes
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -117,6 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("--lambda_", default=1.0, type=float)
     parser.add_argument("--lambda_range", default="0,1,0.2", type=str)
     parser.add_argument("--dataset", default="cifar10", type=str)
+    parser.add_argument("--loss_type", default="focal", type=str, help="Tipo di loss da combinare")
     args = parser.parse_args()
 
     initialize(args, seed=42)
@@ -124,41 +137,55 @@ if __name__ == "__main__":
     args.device = device
 
     dataset, num_classes = load_dataset(args.dataset, args.batch_size)
-    wresnet_versions = {2: WRN56_2, 4: WRN56_4, 8: WRN56_8}
-    model_fn = wresnet_versions.get(args.depth)
+    model_fn = {2: WRN56_2, 4: WRN56_4, 8: WRN56_8}.get(args.depth)
     if model_fn is None:
         raise ValueError(f"Unsupported depth {args.depth}")
 
     lambda_values = [args.lambda_]
     if args.optimize_lambda:
         try:
-            lambda_start, lambda_end, lambda_step = map(float, args.lambda_range.split(","))
-            step_count = int((lambda_end - lambda_start) / lambda_step) + 1
-            lambda_values = [round(lambda_start + i * lambda_step, 2) for i in range(step_count)]
+            start, end, step = map(float, args.lambda_range.split(","))
+            lambda_values = [round(start + i * step, 2) for i in range(int((end - start) / step) + 1)]
         except ValueError:
-            raise ValueError("lambda_range must be three comma-separated floats: start,end,step")
+            raise ValueError("lambda_range must be three comma-separated floats")
 
-    '''print(">>> Training with SGD")
+    print(f">>> Training with SGD\n>>> Loss configuration: {args.loss_type}")
     for lambda_val in lambda_values:
-        model_sgd = model_fn(num_classes=num_classes).to(device)
-        optimizer_sgd = torch.optim.SGD(model_sgd.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-        scheduler_sgd = StepLR(optimizer_sgd, args.learning_rate, args.epochs)
-        log_sgd = Log(log_each=10, log_file=f"evaluation_sgd_lambda_{lambda_val:.2f}.csv", model_name=f"model_sgd_{lambda_val:.2f}.pth", lambda_value=lambda_val, optimize_lambda=args.optimize_lambda)
-        train(model_sgd, optimizer_sgd, scheduler_sgd, dataset, args, log_sgd, use_sam=False, lambda_optimizer=None)
-        log_sgd.save_best_metrics()
-        log_sgd.print_best_metrics()'''
+        model = model_fn(num_classes=num_classes).to(device)
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+        scheduler = StepLR(optimizer, step_size=30, gamma=0.1)
+        log = Log(log_each=10, model_name=f"model_sgd_{lambda_val:.2f}.pth", lambda_value=lambda_val, optimize_lambda=args.optimize_lambda)
 
-    print(">>> Training with SAM")
+        train(model, optimizer, scheduler, dataset, args, log, use_sam=False)
+      
+        print(">>> Salvando il modello migliore")
+        torch.save(model.state_dict(), log.best_model_path)
+       
+        
+        log.print_best_metrics()
+
+    print("Plotting weight analysis...")
+    try:
+        subprocess.run([
+            "python", "weight_analysis.py",
+            "--models_dir", "results/",
+            "--lambda_range", args.lambda_range,
+            "--depth", str(args.depth)
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"[ERRORE] plot_weight_analysis fallito: {e}")
+        
+        
+    '''print(">>> Training with SAM , Loss configuration: {args.loss_type}")
     for lambda_val in lambda_values:
-        model_sam = model_fn(num_classes=num_classes).to(device)
+        model = model_fn(num_classes=num_classes).to(device)
         base_optimizer = torch.optim.SGD
-        optimizer_sam = SAM(model_sam.parameters(), base_optimizer, rho=args.rho, adaptive=False, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-        scheduler_sam = StepLR(optimizer_sam.base_optimizer, args.learning_rate, args.epochs)
-        log_sam = Log(log_each=10, log_file=f"evaluation_sam_lambda_{lambda_val:.2f}.csv", model_name=f"model_sam_{lambda_val:.2f}.pth", lambda_value=lambda_val, optimize_lambda=args.optimize_lambda)
-        train(model_sam, optimizer_sam, scheduler_sam, dataset, args, log_sam, use_sam=True, lambda_optimizer=None)
-        log_sam.save_best_metrics()
-        log_sam.print_best_metrics()
+        optimizer = SAM(model.parameters(), base_optimizer, rho=args.rho, adaptive=False, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+        scheduler = StepLR(optimizer.base_optimizer, step_size=30, gamma=0.1)
+        log = Log(log_each=10, model_name=f"model_sam_{lambda_val:.2f}.pth", lambda_value=lambda_val, optimize_lambda=args.optimize_lambda)
 
-    print(">>> Grid Search for SAM rho")
-    best_rho, best_acc = grid_search_sam_rho(model_fn, dataset, args, rhos=[0.01, 0.03, 0.05, 0.1], train_fn=train)
-    print(f"\nBest rho: {best_rho} with Validation Accuracy: {best_acc * 100:.2f}%")
+        train(model, optimizer, scheduler, dataset, args, log, use_sam=True)
+
+        print(">>> Salvando il modello migliore")
+        torch.save(model.state_dict(), log.best_model_path)
+        log.print_best_metrics()'''

@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from utility.log import Log
-from utility.lr import StepLR
 import torch.optim as optim
 
 
@@ -37,6 +36,7 @@ class LogitNormLoss(nn.Module):
         norms = torch.norm(x, p=2, dim=-1, keepdim=True) + 1e-7
         logit_norm = torch.div(x, norms) / self.t
         return F.cross_entropy(logit_norm, target)
+
 
 def squared_l2_norm(x):
     flattened = x.view(x.size(0), -1)
@@ -106,50 +106,61 @@ class TRADESLoss(nn.Module):
         return loss_natural + self.beta * loss_robust
 
 
+class HuberLoss(nn.Module):
+    """
+    Implementazione della Huber Loss per la classificazione.
+    """
+    def __init__(self, delta=1.0):
+        super(HuberLoss, self).__init__()
+        self.delta = delta
+
+    def forward(self, inputs, targets):
+        # Calcola la Cross Entropy Loss per i logits
+        loss = F.cross_entropy(inputs, targets, reduction='none')
+
+        # Calcola i residui tra logits e target (one-hot encoded)
+        residual = F.one_hot(targets, num_classes=inputs.size(1)).float() - F.softmax(inputs, dim=1)
+        residual = residual.sum(dim=1)  # Somma lungo la dimensione delle classi
+
+        # Applica la Huber Loss
+        condition = residual.abs() < self.delta
+        huber_loss = torch.where(condition, 0.5 * residual**2, self.delta * (residual.abs() - 0.5 * self.delta))
+
+        return huber_loss.mean()
+
+
 class CombinedLoss(nn.Module):
-    def __init__(self, loss1: nn.Module, loss2: nn.Module, lambda_: float = 0.5):
+    def __init__(self, loss1, loss2, lambda_):
         super(CombinedLoss, self).__init__()
         self.loss1 = loss1
         self.loss2 = loss2
-        self.lambda_ = lambda_
+        self.lambda_ = float(lambda_)
 
-    def forward(self, inputs, targets):
-        return self.lambda_ * self.loss1(inputs, targets) + (1 - self.lambda_) * self.loss2(inputs, targets)
+    def forward(self, model, inputs, targets):
+        """
+        Calcola la loss combinata tra loss1 e loss2.
 
+        Args:
+            model (torch.nn.Module): Il modello da addestrare.
+            inputs (torch.Tensor): Gli input del modello.
+            targets (torch.Tensor): I target associati agli input.
 
-class LambdaOptimizer:
-    """
-    Classe per eseguire il training e visualizzare le metriche al variare di lambda.
-    """
-    def __init__(self, train_fn, dataset, model, optimizer, scheduler, args, lambda_start=0.0, lambda_end=1.0, lambda_step=0.2):
-        self.train_fn = train_fn
-        self.dataset = dataset
-        self.model = model
-        self.optimizer = optimizer
-        self.scheduler = scheduler
-        self.args = args
-        self.lambda_start = lambda_start
-        self.lambda_end = lambda_end
-        self.lambda_step = lambda_step
+        Returns:
+            torch.Tensor: La loss combinata.
+        """
+        # Ottieni i logits chiamando il modello con gli input
+        logits = model(inputs)
 
-    def run(self):
-        # Loop su valori di lambda nell'intervallo definito
-        lambda_values = [round(i, 2) for i in torch.arange(self.lambda_start, self.lambda_end + self.lambda_step, self.lambda_step).tolist()]
-        for lambda_ in lambda_values:
-            print(f"\n>>> Testing lambda = {lambda_}")
+        # Calcola la prima loss
+        loss1_value = self.loss1(logits, targets)
 
-            # Inizializza il logger per il valore corrente di lambda
-            log = Log(
-                log_each=10,
-                log_file=f"training_log_lambda_{lambda_:.2f}.csv",
-                model_name="model.pth",
-                lambda_value=lambda_,
-                optimize_lambda=True
-            )
+        # Calcola la seconda loss
+        if isinstance(self.loss2, TRADESLoss):
+            loss2_value = self.loss2(model, inputs, targets)
+        else:
+            loss2_value = self.loss2(logits, targets)
 
-            # Esegui il training con il valore corrente di lambda
-            self.train_fn(self.model, self.optimizer, self.scheduler, self.dataset, self.args, log, use_sam=False, lambda_optimizer=None)
+        # Calcola la loss combinata
+        combined_loss = self.lambda_ * loss1_value + (1 - self.lambda_) * loss2_value
 
-            # Stampa tutte le metriche per il valore corrente di lambda
-            print(f"Metrics for Lambda = {lambda_}:")
-            log.print_best_metrics()  # Chiamata diretta al metodo di stampa delle metriche
+        return combined_loss

@@ -1,0 +1,98 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4058163
+>>> Training with SGD
+>>> Loss configuration: focal
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0049
+Validation Accuracy: 71.44%
+Test Loss: 0.0053
+Test Accuracy: 70.37%
+Lambda: 0.0
+Expected Calibration Error (ECE): 3.7083
+[Robustness Metrics]
+Robust Accuracy: 42.42%
+Sharpness: 1.0731
+Flat Minima: 0.0074
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0044
+Validation Accuracy: 74.52%
+Test Loss: 0.0046
+Test Accuracy: 73.62%
+Lambda: 0.2
+Expected Calibration Error (ECE): 3.7119
+[Robustness Metrics]
+Robust Accuracy: 35.38%
+Sharpness: 1.3165
+Flat Minima: 0.0069
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0045
+Validation Accuracy: 74.04%
+Test Loss: 0.0044
+Test Accuracy: 75.07%
+Lambda: 0.4
+Expected Calibration Error (ECE): 3.7210
+[Robustness Metrics]
+Robust Accuracy: 36.51%
+Sharpness: 1.3664
+Flat Minima: 0.0049
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.0041
+Validation Accuracy: 76.38%
+Test Loss: 0.0042
+Test Accuracy: 76.07%
+Lambda: 0.6
+Expected Calibration Error (ECE): 3.6776
+[Robustness Metrics]
+Robust Accuracy: 35.61%
+Sharpness: 1.6311
+Flat Minima: 0.0045
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 6
+Validation Loss: 0.0040
+Validation Accuracy: 76.58%
+Test Loss: 0.0047
+Test Accuracy: 74.23%
+Lambda: 0.8
+Expected Calibration Error (ECE): 3.7077
+[Robustness Metrics]
+Robust Accuracy: 37.63%
+Sharpness: 1.3753
+Flat Minima: 0.0047
+
+[Analisi pesi per lambda]
+  Lambda |   Sparsity |   PathNorm |  Stability |    PredVar
+------------------------------------------------------------
+    0.00 | 0.000000 | 40.5682 | 0.000000 | 0.000000
+    0.20 | 0.000000 | 32.6606 | 0.000000 | 0.000000
+    0.40 | 0.000000 | 33.6243 | 0.000000 | 0.000000
+    0.60 | 0.000000 | 33.9034 | 0.000000 | 0.000000
+    0.80 | 0.000000 | 33.5999 | 0.000000 | 0.000000
+    1.00 | 0.000000 | 33.1811 | 0.000000 | 0.000000
+>>> Salvando il modello migliore
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.0043
+Validation Accuracy: 74.78%
+Test Loss: 0.0051
+Test Accuracy: 72.68%
+Lambda: 1.0
+Expected Calibration Error (ECE): 3.6904
+[Robustness Metrics]
+Robust Accuracy: 39.12%
+Sharpness: 1.3136
+Flat Minima: 0.0061
+Plotting weight analysis...

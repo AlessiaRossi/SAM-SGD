@@ -1,5 +1,5 @@
 import torch
-from utility.lr import StepLR
+from torch.optim.lr_scheduler import StepLR
 from utility.log import Log  # Import Log
 import csv  # Import csv module
 
