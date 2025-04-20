@@ -16,28 +16,32 @@ def disable_running_stats(model):
 
 
 class Log:
-    def __init__(self, log_each: int, initial_epoch=-1, log_dir="results", model_name="model.pth", algorithm_name="", lambda_value=None, optimize_lambda=False):
+    def __init__(self, log_each, model_name, lambda_value, optimize_lambda, use_sam=False):
         self.log_each = log_each
-        self.epoch = initial_epoch
-        self.log_dir = log_dir
-        self.best_model_path = os.path.join(log_dir, model_name)
-        self.algorithm_name = algorithm_name
+        self.model_name = model_name
         self.lambda_value = lambda_value
         self.optimize_lambda = optimize_lambda
-
+        self.use_sam = use_sam
+        self.metrics = {
+            "train": [],
+            "val": [],
+            "test": [],
+            "robustness": [],
+        }
+        self.best_model_path = f"results/{model_name}"
+        # Inizializza tutte le chiavi necessarie in best_metrics
         self.best_metrics = {
             "epoch": -1,
             "val_loss": float("inf"),
             "val_accuracy": 0.0,
-            "test_loss": float("inf"),
-            "test_accuracy": 0.0,
-            "robust_accuracy": None,
-            "sharpness": None,
-            "flat_minima": None,
-            "ece": None, 
+            "test_loss": None,
+            "test_accuracy": None,
+            "sharpness": 0.0,  # Inizializza con un valore predefinito
+            "flat_minima": 0.0,
+            "robust_accuracy": 0.0,
+            "ece": 0.0,
         }
-
-        os.makedirs(self.log_dir, exist_ok=True)
+        self.epoch = 0
 
     def train(self, len_dataset):
         self.epoch += 1
@@ -70,8 +74,8 @@ class Log:
         pass
 
     def print_best_metrics(self):
-        if self.best_metrics["epoch"] == -1:
-            print(">>> No best metrics available to print.")
+        if "epoch" not in self.best_metrics or self.best_metrics["epoch"] == -1:
+            print("Nessuna metrica migliore trovata durante il training.")
             return
 
         print("\nBest Metrics:")
@@ -93,5 +97,13 @@ class Log:
         torch.save(model.state_dict(), self.best_model_path)
 
     def attach_robust_metrics(self, model, dataloader, device, criterion):
+        """
+        Calcola e salva le metriche di robustezza.
+        """
         robustness = eval_robustness(model, dataloader, device, criterion, lambda_value=self.lambda_value)
-        self.best_metrics.update(robustness)
+        self.best_metrics.update({
+            "robust_accuracy": robustness.get("robust_accuracy", 0.0),
+            "sharpness": robustness.get("sharpness", 0.0),
+            "flat_minima": robustness.get("flat_minima", 0.0),
+            "ece": robustness.get("ece", 0.0),
+        })

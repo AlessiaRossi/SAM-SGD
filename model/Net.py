@@ -85,6 +85,10 @@ class ResNet_cifar(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+    
+    def __repr__(self):
+        return f"ResNet_cifar(block={self.layer1[0].__class__.__name__}, layers={[len(self.layer1), len(self.layer2), len(self.layer3)]})"
+
 
 # CIFAR-style ResNet configurations
 def ResNet20(num_classes=10):
@@ -143,6 +147,11 @@ class WResNet_cifar(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
+    
+    def __repr__(self):
+        return f"WResNet_cifar(block={self.layer1[0].__class__.__name__}, layers={[len(self.layer1), len(self.layer2), len(self.layer3)]}, k={self.linear.in_features // (64 * BasicBlock.expansion)})"
+
+
 
 # Wide ResNetconfigurations
 def WRN56_2(num_classes=10):
@@ -159,3 +168,19 @@ def WRN56_8(num_classes=10):
     depth = 56
     n = (depth - 2) // 6
     return WResNet_cifar(BasicBlock, [n,n,n], 8)
+
+# Model factory for automation
+def get_model(name: str, num_classes=10):
+    models = {
+        "resnet20": ResNet20,
+        "resnet32": ResNet32,
+        "resnet44": ResNet44,
+        "resnet56": ResNet56,
+        "resnet110": ResNet110,
+        "wrn56_2": WRN56_2,
+        "wrn56_4": WRN56_4,
+        "wrn56_8": WRN56_8
+    }
+    if name.lower() not in models:
+        raise ValueError(f"Model {name} not supported")
+    return models[name.lower()](num_classes=num_classes)

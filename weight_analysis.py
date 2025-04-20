@@ -8,31 +8,36 @@ from model.Net import WRN56_2, WRN56_4, WRN56_8
 
 
 def compute_sparsity_and_pathnorm(model):
+    """
+    Calcola la sparsità e il PathNorm del modello.
+
+    Returns:
+        tuple: Sparsità e PathNorm.
+    """
     total_params = 0
     zero_params = 0
-    pathnorm_squared = 0.0
-    with torch.no_grad():
-        for param in model.parameters():
-            total_params += param.numel()
-            zero_params += torch.sum(param == 0).item()
-            pathnorm_squared += torch.norm(param, p=2).item() ** 2
-    sparsity = zero_params / total_params
-    pathnorm = pathnorm_squared ** 0.5
-    return sparsity, pathnorm
+    path_norm = 0.0
+
+    for param in model.parameters():
+        total_params += param.numel()
+        zero_params += (param == 0).sum().item()
+        path_norm += param.norm(2).item()
+
+    sparsity = zero_params / total_params if total_params > 0 else 0.0
+    return sparsity, path_norm
 
 
 def compute_stability_score(model, inputs, N=5):
     """
-    Calcola lo Stability Score (mediana della varianza sui logits) e la varianza delle predizioni.
+    Calcola la stabilità del modello perturbando i pesi.
 
     Args:
-        model (torch.nn.Module): Il modello da analizzare.
-        inputs (torch.Tensor): Gli input su cui calcolare la stabilità.
-        N (int): Numero di run per calcolare la varianza.
+        model (torch.nn.Module): Modello.
+        inputs (torch.Tensor): Input per il calcolo.
+        N (int): Numero di perturbazioni.
 
     Returns:
-        float: Mediana della varianza sui logits.
-        float: Varianza delle predizioni.
+        tuple: Stabilità e varianza delle predizioni.
     """
     logits_list = []
     predictions_list = []
@@ -67,51 +72,72 @@ def load_model(model_fn, model_path, device):
 
 
 def analyze_and_plot(models_dir, model_fn, lambdas, device, inputs, N=5):
+    """
+    Analizza i pesi per diversi valori di lambda e stampa i risultati.
+
+    Args:
+        models_dir (str): Directory dei modelli salvati.
+        model_fn (callable): Funzione per caricare il modello.
+        lambdas (list): Lista di valori di lambda.
+        device (torch.device): Dispositivo (CPU o GPU).
+        inputs (torch.Tensor): Input per il calcolo della stabilità.
+        N (int): Numero di perturbazioni per la stabilità.
+
+    Returns:
+        tuple: Sparsità, PathNorm, Stabilità, PredVar.
+    """
     sparsities = []
     pathnorms = []
     stability_scores = []
     prediction_variances = []
-    all_weights = []
 
     print("\n[Analisi pesi per lambda]")
     print(f"{'Lambda':>8} | {'Sparsity':>10} | {'PathNorm':>10} | {'Stability':>10} | {'PredVar':>10}")
-    print("-" * 60)
+    print("-" * 58)
 
     for lam in lambdas:
         model_path = os.path.join(models_dir, f"model_sgd_{lam:.2f}.pth")
         if not os.path.exists(model_path):
-            print(f"[SKIP] Model {model_path} non trovato.")
+            print(f"Modello non trovato per lambda={lam:.2f}")
             continue
 
         model = load_model(model_fn, model_path, device)
-        s, p = compute_sparsity_and_pathnorm(model)
-        sparsities.append((lam, s))
-        pathnorms.append((lam, p))
+        sparsity, path_norm = compute_sparsity_and_pathnorm(model)
+        stability, pred_var = compute_stability_score(model, inputs, N)
 
-        # Calcola Stability Score e varianza delle predizioni
-        median_logits_var, mean_pred_var = compute_stability_score(model, inputs, N)
-        stability_scores.append((lam, median_logits_var))
-        prediction_variances.append((lam, mean_pred_var))
+        # Aggiungi i risultati come tuple (lambda, valore)
+        sparsities.append((lam, sparsity))
+        pathnorms.append((lam, path_norm))
+        stability_scores.append((lam, stability))
+        prediction_variances.append((lam, pred_var))
 
-        # Raccogli tutti i pesi per histogramma aggregato
-        weights = torch.cat([param.view(-1).detach().cpu() for param in model.parameters()])
-        all_weights.append((lam, weights))
+        print(f"{lam:>8.2f} | {sparsity:>10.6f} | {path_norm:>10.4f} | {stability:>10.6f} | {pred_var:>10.6f}")
 
-        print(f"{lam:>8.2f} | {s:.6f} | {p:.4f} | {median_logits_var:.6f} | {mean_pred_var:.6f}")
-
-    return sparsities, pathnorms, stability_scores, prediction_variances, all_weights
+    return sparsities, pathnorms, stability_scores, prediction_variances
 
 
-def plot_metric_trend(values, title, ylabel, filename):
-    lambdas, metrics = zip(*values)
+def plot_metric_trend(values, title, ylabel, output_file):
+    """
+    Plotta l'andamento di una metrica rispetto a lambda.
+
+    Args:
+        values (list of tuple): Lista di tuple (lambda, metrica).
+        title (str): Titolo del grafico.
+        ylabel (str): Etichetta dell'asse y.
+        output_file (str): Nome del file di output per salvare il grafico.
+    """
+    # Verifica che values sia una lista di tuple
+    if not isinstance(values, list) or not all(isinstance(v, tuple) and len(v) == 2 for v in values):
+        raise ValueError("Il parametro 'values' deve essere una lista di tuple (lambda, metrica).")
+
+    lambdas, metrics = zip(*values)  # Estrae i valori di lambda e le metriche
     plt.figure()
     plt.plot(lambdas, metrics, marker='o')
     plt.title(title)
     plt.xlabel("Lambda")
     plt.ylabel(ylabel)
     plt.grid(True)
-    plt.tight_layout()
-    plt.savefig(os.path.join("results", filename))
+    plt.savefig(output_file)
     plt.close()
 
 
@@ -148,11 +174,17 @@ if __name__ == "__main__":
     # Genera input casuali per calcolare lo Stability Score
     inputs = torch.randn(args.batch_size, 3, 32, 32).to(device)
 
-    sparsities, pathnorms, stability_scores, prediction_variances, all_weights = analyze_and_plot(
-        args.models_dir, model_fn, lambdas, device, inputs, args.N
+    sparsities, pathnorms, stability_scores, prediction_variances = analyze_and_plot(
+        models_dir="results/",
+        model_fn=model_fn,
+        lambdas=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+        device=device,
+        inputs=inputs,
+        N=5
     )
+
+    # Plotta le metriche
     plot_metric_trend(sparsities, "Sparsity vs Lambda", "Sparsity", "sparsity_vs_lambda.png")
     plot_metric_trend(pathnorms, "PathNorm vs Lambda", "PathNorm", "pathnorm_vs_lambda.png")
-    plot_metric_trend(stability_scores, "Stability Score vs Lambda", "Stability Score", "stability_vs_lambda.png")
-    plot_metric_trend(prediction_variances, "Prediction Variance vs Lambda", "Prediction Variance", "prediction_variance_vs_lambda.png")
-    plot_aggregated_weight_distributions(all_weights)
+    plot_metric_trend(stability_scores, "Stability vs Lambda", "Stability", "stability_vs_lambda.png")
+    plot_metric_trend(prediction_variances, "Prediction Variance vs Lambda", "Prediction Variance", "predvar_vs_lambda.png")

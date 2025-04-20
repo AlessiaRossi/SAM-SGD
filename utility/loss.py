@@ -48,7 +48,7 @@ def l2_norm(x):
 
 
 class TRADESLoss(nn.Module):
-    def __init__(self, model, optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=1.0, distance='l_inf'):
+    def __init__(self, model, optimizer, step_size, epsilon, perturb_steps, beta, distance):
         super(TRADESLoss, self).__init__()
         self.model = model
         self.optimizer = optimizer
@@ -57,53 +57,49 @@ class TRADESLoss(nn.Module):
         self.perturb_steps = perturb_steps
         self.beta = beta
         self.distance = distance
-        self.kl_div = nn.KLDivLoss(reduction='batchmean')
 
-    def forward(self, x_natural, y):
-        batch_size = len(x_natural)
-        self.model.eval()
-        x_adv = x_natural.detach() + 0.001 * torch.randn_like(x_natural).cuda().detach()
+        # Inizializza KLDivLoss
+        self.kl_div = nn.KLDivLoss(reduction="batchmean")
 
-        if self.distance == 'l_inf':
-            for _ in range(self.perturb_steps):
-                x_adv.requires_grad_()
-                with torch.enable_grad():
-                    loss_kl = self.kl_div(F.log_softmax(self.model(x_adv), dim=1),
-                                           F.softmax(self.model(x_natural), dim=1))
-                grad = torch.autograd.grad(loss_kl, [x_adv])[0]
-                x_adv = x_adv.detach() + self.step_size * torch.sign(grad.detach())
-                x_adv = torch.min(torch.max(x_adv, x_natural - self.epsilon), x_natural + self.epsilon)
-                x_adv = torch.clamp(x_adv, 0.0, 1.0)
-        elif self.distance == 'l_2':
-            delta = 0.001 * torch.randn_like(x_natural).cuda().detach()
-            delta.requires_grad_()
-            optimizer_delta = optim.SGD([delta], lr=self.epsilon / self.perturb_steps * 2)
+    def forward(self, inputs, targets):
+        """
+        Calcola la perdita TRADES.
+        """
+        # Genera perturbazioni avversarie
+        x_adv = inputs.detach() + 0.001 * torch.randn_like(inputs).detach()
+        for _ in range(self.perturb_steps):
+            x_adv.requires_grad_()
+            with torch.enable_grad():
+                loss_adv = F.cross_entropy(self.model(x_adv), targets)
+            grad = torch.autograd.grad(loss_adv, [x_adv])[0]
 
-            for _ in range(self.perturb_steps):
-                adv = x_natural + delta
-                optimizer_delta.zero_grad()
-                with torch.enable_grad():
-                    loss = -self.kl_div(F.log_softmax(self.model(adv), dim=1),
-                                        F.softmax(self.model(x_natural), dim=1))
-                loss.backward()
-                grad_norms = delta.grad.view(batch_size, -1).norm(p=2, dim=1)
-                delta.grad.div_(grad_norms.view(-1, 1, 1, 1))
-                delta.grad[grad_norms == 0] = torch.randn_like(delta.grad[grad_norms == 0])
-                optimizer_delta.step()
-                delta.data.add_(x_natural)
-                delta.data.clamp_(0, 1).sub_(x_natural)
-                delta.data.renorm_(p=2, dim=0, maxnorm=self.epsilon)
-            x_adv = (x_natural + delta).detach()
-        else:
+            # Calcola la norma dei gradienti
+            grad_norm = torch.norm(grad.view(grad.size(0), -1), dim=1, keepdim=True)
+            grad_norm = torch.clamp(grad_norm, min=1e-8)  # Evita divisioni per zero
+
+            # Clipping dinamico dei gradienti
+            grad = grad / grad_norm  # Normalizza i gradienti
+            if self.distance == "l_inf":
+                x_adv = x_adv + self.step_size * grad.sign()
+                x_adv = torch.clamp(x_adv, inputs - self.epsilon, inputs + self.epsilon)
+            elif self.distance == "l_2":
+                x_adv = x_adv + self.step_size * grad
+                delta = x_adv - inputs
+                delta_norm = torch.norm(delta.view(delta.size(0), -1), dim=1, keepdim=True)
+                mask = delta_norm > self.epsilon
+                delta[mask] = self.epsilon * delta[mask] / delta_norm[mask]
+                x_adv = inputs + delta
             x_adv = torch.clamp(x_adv, 0.0, 1.0)
 
-        self.model.train()
-        x_adv = torch.clamp(x_adv, 0.0, 1.0).detach()
-        self.optimizer.zero_grad()
-        loss_natural = F.cross_entropy(self.model(x_natural), y)
-        loss_robust = self.kl_div(F.log_softmax(self.model(x_adv), dim=1),
-                                  F.softmax(self.model(x_natural), dim=1)) / batch_size
-        return loss_natural + self.beta * loss_robust
+        # Calcola la perdita TRADES
+        logits = self.model(inputs)
+        logits_adv = self.model(x_adv)
+        logits = logits - logits.max(dim=1, keepdim=True).values  # Normalizzazione
+        logits_adv = logits_adv - logits_adv.max(dim=1, keepdim=True).values
+        loss_ce = F.cross_entropy(logits, targets)
+        loss_kl = self.kl_div(F.log_softmax(logits_adv, dim=1), F.softmax(logits, dim=1))
+        loss = loss_ce + self.beta * loss_kl
+        return loss
 
 
 class HuberLoss(nn.Module):
@@ -134,33 +130,17 @@ class CombinedLoss(nn.Module):
         super(CombinedLoss, self).__init__()
         self.loss1 = loss1
         self.loss2 = loss2
-        self.lambda_ = float(lambda_)
+        self.lambda_ = lambda_
+
+    def _compute_loss(self, loss_fn, model, inputs, targets):
+        # Se accetta 3 argomenti: (model, inputs, targets)
+        if isinstance(loss_fn, TRADESLoss):
+            return loss_fn(inputs, targets)
+        else:
+            logits = model(inputs)
+            return loss_fn(logits, targets)
 
     def forward(self, model, inputs, targets):
-        """
-        Calcola la loss combinata tra loss1 e loss2.
-
-        Args:
-            model (torch.nn.Module): Il modello da addestrare.
-            inputs (torch.Tensor): Gli input del modello.
-            targets (torch.Tensor): I target associati agli input.
-
-        Returns:
-            torch.Tensor: La loss combinata.
-        """
-        # Ottieni i logits chiamando il modello con gli input
-        logits = model(inputs)
-
-        # Calcola la prima loss
-        loss1_value = self.loss1(logits, targets)
-
-        # Calcola la seconda loss
-        if isinstance(self.loss2, TRADESLoss):
-            loss2_value = self.loss2(model, inputs, targets)
-        else:
-            loss2_value = self.loss2(logits, targets)
-
-        # Calcola la loss combinata
-        combined_loss = self.lambda_ * loss1_value + (1 - self.lambda_) * loss2_value
-
-        return combined_loss
+        loss1_value = self._compute_loss(self.loss1, model, inputs, targets)
+        loss2_value = self._compute_loss(self.loss2, model, inputs, targets)
+        return self.lambda_ * loss1_value + (1 - self.lambda_) * loss2_value
