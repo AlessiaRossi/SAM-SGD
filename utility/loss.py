@@ -2,7 +2,6 @@ import optuna
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utility.log import Log
 import torch.optim as optim
 
 
@@ -14,10 +13,11 @@ class FocalLoss(nn.Module):
         self.reduction = reduction
 
     def forward(self, inputs, targets):
-        ce_loss = F.cross_entropy(inputs, targets, reduction='none')  # classifica multi-classe
+        if targets.dim() != 1:
+            targets = targets.view(-1)  # Assicurati che i targets siano 1D
+        ce_loss = F.cross_entropy(inputs, targets, reduction='none')
         pt = torch.exp(-ce_loss)
         focal_loss = self.alpha * (1 - pt) ** self.gamma * ce_loss
-
         if self.reduction == 'mean':
             return focal_loss.mean()
         elif self.reduction == 'sum':
@@ -57,28 +57,35 @@ class TRADESLoss(nn.Module):
         self.perturb_steps = perturb_steps
         self.beta = beta
         self.distance = distance
-
-        # Inizializza KLDivLoss
         self.kl_div = nn.KLDivLoss(reduction="batchmean")
 
-    def forward(self, inputs, targets):
+    def forward(self, model, inputs, targets):
         """
-        Calcola la perdita TRADES.
+        Calcola la loss TRADES.
+        Args:
+            model (torch.nn.Module): Il modello.
+            inputs (torch.Tensor): Gli input.
+            targets (torch.Tensor): I target.
+        Returns:
+            torch.Tensor: La loss TRADES.
         """
         # Genera perturbazioni avversarie
         x_adv = inputs.detach() + 0.001 * torch.randn_like(inputs).detach()
         for _ in range(self.perturb_steps):
             x_adv.requires_grad_()
             with torch.enable_grad():
-                loss_adv = F.cross_entropy(self.model(x_adv), targets)
+                loss_adv = F.cross_entropy(model(x_adv), targets)
             grad = torch.autograd.grad(loss_adv, [x_adv])[0]
 
-            # Calcola la norma dei gradienti
+            # Compute gradient norm per sample
             grad_norm = torch.norm(grad.view(grad.size(0), -1), dim=1, keepdim=True)
-            grad_norm = torch.clamp(grad_norm, min=1e-8)  # Evita divisioni per zero
 
-            # Clipping dinamico dei gradienti
-            grad = grad / grad_norm  # Normalizza i gradienti
+            # Ensure grad_norm is broadcastable to grad
+            grad_norm = grad_norm.view(-1, *([1] * (grad.dim() - 1)))
+
+            # Normalize gradients
+            grad = grad / grad_norm.clamp(min=1e-8)  # Avoid division by zero
+
             if self.distance == "l_inf":
                 x_adv = x_adv + self.step_size * grad.sign()
                 x_adv = torch.clamp(x_adv, inputs - self.epsilon, inputs + self.epsilon)
@@ -89,11 +96,11 @@ class TRADESLoss(nn.Module):
                 mask = delta_norm > self.epsilon
                 delta[mask] = self.epsilon * delta[mask] / delta_norm[mask]
                 x_adv = inputs + delta
+
             x_adv = torch.clamp(x_adv, 0.0, 1.0)
 
-        # Calcola la perdita TRADES
-        logits = self.model(inputs)
-        logits_adv = self.model(x_adv)
+        logits = model(inputs)
+        logits_adv = model(x_adv)
         logits = logits - logits.max(dim=1, keepdim=True).values  # Normalizzazione
         logits_adv = logits_adv - logits_adv.max(dim=1, keepdim=True).values
         loss_ce = F.cross_entropy(logits, targets)
@@ -111,6 +118,10 @@ class HuberLoss(nn.Module):
         self.delta = delta
 
     def forward(self, inputs, targets):
+        # Assicurati che i targets siano un tensore 1D
+        if targets.dim() != 1:
+            targets = targets.argmax(dim=1)  # Converti da one-hot encoding a indici delle classi
+
         # Calcola la Cross Entropy Loss per i logits
         loss = F.cross_entropy(inputs, targets, reduction='none')
 
@@ -123,19 +134,21 @@ class HuberLoss(nn.Module):
         huber_loss = torch.where(condition, 0.5 * residual**2, self.delta * (residual.abs() - 0.5 * self.delta))
 
         return huber_loss.mean()
-
+    
 
 class CombinedLoss(nn.Module):
     def __init__(self, loss1, loss2, lambda_):
         super(CombinedLoss, self).__init__()
-        self.loss1 = loss1
-        self.loss2 = loss2
+        self.loss1 = loss1  # tipicamente CrossEntropy
+        self.loss2 = loss2  # secondaria: Huber, TRADES, ecc.
         self.lambda_ = lambda_
 
     def _compute_loss(self, loss_fn, model, inputs, targets):
-        # Se accetta 3 argomenti: (model, inputs, targets)
+        """
+        Calcola la loss utilizzando la funzione di perdita specificata.
+        """
         if isinstance(loss_fn, TRADESLoss):
-            return loss_fn(inputs, targets)
+            return loss_fn(model, inputs, targets)  # Passa il modello a TRADESLoss
         else:
             logits = model(inputs)
             return loss_fn(logits, targets)

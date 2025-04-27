@@ -1,0 +1,116 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4085248
+>>> Training with SAM
+>>> Loss configuration: focal
+>>> Modello migliore ricaricato da results/model_sam_0.00.pth
+
+Sharpness: 6925.651473
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 343.230887
+Stability: 2.002052568172985e-08, PredVar: 5.9315942762194155e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4709
+Validation Accuracy: 77.14%
+Test Loss: 0.6324
+Test Accuracy: 78.14%
+Lambda: 0.0
+Expected Calibration Error (ECE): 0.0842
+[Robustness Metrics]
+Robust Accuracy: 45.41%
+Flat Minima: 0.0029
+>>> Modello migliore ricaricato da results/model_sam_0.20.pth
+
+Sharpness: 880.358819
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 343.523533
+Stability: 2.2337189875543118e-08, PredVar: 7.329868218733816e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4029
+Validation Accuracy: 80.66%
+Test Loss: 0.5418
+Test Accuracy: 81.24%
+Lambda: 0.2
+Expected Calibration Error (ECE): 0.0778
+[Robustness Metrics]
+Robust Accuracy: 36.03%
+Flat Minima: 0.0025
+>>> Modello migliore ricaricato da results/model_sam_0.40.pth
+
+Sharpness: 363.445719
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 400.602393
+Stability: 1.5685509779927997e-08, PredVar: 3.5139562039912227e-15
+
+Best Metrics:
+Epoch: 8
+Validation Loss: 0.5763
+Validation Accuracy: 72.84%
+Test Loss: 0.7457
+Test Accuracy: 74.17%
+Lambda: 0.4
+Expected Calibration Error (ECE): 0.0932
+[Robustness Metrics]
+Robust Accuracy: 35.89%
+Flat Minima: 0.0039
+>>> Modello migliore ricaricato da results/model_sam_0.60.pth
+
+Sharpness: 238.670643
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 344.917218
+Stability: 1.7770798166338864e-08, PredVar: 4.363019277461855e-15
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.4994
+Validation Accuracy: 77.06%
+Test Loss: 0.6700
+Test Accuracy: 77.64%
+Lambda: 0.6
+Expected Calibration Error (ECE): 0.0892
+[Robustness Metrics]
+Robust Accuracy: 44.86%
+Flat Minima: 0.0040
+>>> Modello migliore ricaricato da results/model_sam_0.80.pth
+
+Sharpness: 430.773469
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 373.181682
+Stability: 2.2063613158707085e-08, PredVar: 7.292874901795431e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.5753
+Validation Accuracy: 73.66%
+Test Loss: 0.7797
+Test Accuracy: 73.21%
+Lambda: 0.8
+Expected Calibration Error (ECE): 0.1034
+[Robustness Metrics]
+Robust Accuracy: 31.33%
+Flat Minima: 0.0032
+>>> Modello migliore ricaricato da results/model_sam_1.00.pth
+
+Sharpness: 618.635902
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 371.913638
+Stability: 1.86249966560581e-08, PredVar: 4.61682846494187e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4660
+Validation Accuracy: 77.28%
+Test Loss: 0.6312
+Test Accuracy: 78.26%
+Lambda: 1.0
+Expected Calibration Error (ECE): 0.0873
+[Robustness Metrics]
+Robust Accuracy: 34.77%
+Flat Minima: 0.0028
+Plotting weight analysis...
+Grafico salvato in sparsity_vs_lambda.png
+Grafico salvato in pathnorm_vs_lambda.png
+Grafico salvato in stability_vs_lambda.png
+Grafico salvato in predvar_vs_lambda.png

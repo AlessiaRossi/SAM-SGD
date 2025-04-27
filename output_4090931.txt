@@ -1,0 +1,116 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4090931
+>>> Training with SGD
+>>> Loss configuration: focal
+>>> Modello migliore ricaricato da results/model_sgd_0.00.pth
+
+Sharpness: 0.636242
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 38.678035
+Stability: 1.9488872737838392e-08, PredVar: 5.842089998748948e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4814
+Validation Accuracy: 76.86%
+Test Loss: 0.6362
+Test Accuracy: 78.07%
+Lambda: 0.0
+Expected Calibration Error (ECE): 0.0882
+[Robustness Metrics]
+Robust Accuracy: 43.84%
+Flat Minima: 0.0029
+>>> Modello migliore ricaricato da results/model_sgd_0.20.pth
+
+Sharpness: 0.587326
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 33.972471
+Stability: 1.926383497163897e-08, PredVar: 5.901574581535776e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4328
+Validation Accuracy: 79.60%
+Test Loss: 0.5873
+Test Accuracy: 79.76%
+Lambda: 0.2
+Expected Calibration Error (ECE): 0.0795
+[Robustness Metrics]
+Robust Accuracy: 43.39%
+Flat Minima: 0.0027
+>>> Modello migliore ricaricato da results/model_sgd_0.40.pth
+
+Sharpness: 0.529752
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 33.340212
+Stability: 1.9334009948579478e-08, PredVar: 5.332758499653097e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4073
+Validation Accuracy: 80.82%
+Test Loss: 0.5298
+Test Accuracy: 81.72%
+Lambda: 0.4
+Expected Calibration Error (ECE): 0.0749
+[Robustness Metrics]
+Robust Accuracy: 49.57%
+Flat Minima: 0.0026
+>>> Modello migliore ricaricato da results/model_sgd_0.60.pth
+
+Sharpness: 0.607350
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 35.211635
+Stability: 1.9714848420449016e-08, PredVar: 5.3868110601491825e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.4403
+Validation Accuracy: 79.28%
+Test Loss: 0.6074
+Test Accuracy: 79.07%
+Lambda: 0.6
+Expected Calibration Error (ECE): 0.0796
+[Robustness Metrics]
+Robust Accuracy: 37.53%
+Flat Minima: 0.0032
+>>> Modello migliore ricaricato da results/model_sgd_0.80.pth
+
+Sharpness: 0.774483
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 33.866993
+Stability: 2.0633395436675528e-08, PredVar: 6.105563408640661e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.5506
+Validation Accuracy: 75.20%
+Test Loss: 0.7745
+Test Accuracy: 74.81%
+Lambda: 0.8
+Expected Calibration Error (ECE): 0.1034
+[Robustness Metrics]
+Robust Accuracy: 40.67%
+Flat Minima: 0.0045
+>>> Modello migliore ricaricato da results/model_sgd_1.00.pth
+
+Sharpness: 0.741999
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 34.003098
+Stability: 2.10371791098396e-08, PredVar: 6.559097035852609e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.5377
+Validation Accuracy: 74.54%
+Test Loss: 0.7420
+Test Accuracy: 74.22%
+Lambda: 1.0
+Expected Calibration Error (ECE): 0.1017
+[Robustness Metrics]
+Robust Accuracy: 48.52%
+Flat Minima: 0.0053
+Plotting weight analysis...
+Grafico salvato in sparsity_vs_lambda.png
+Grafico salvato in pathnorm_vs_lambda.png
+Grafico salvato in stability_vs_lambda.png
+Grafico salvato in predvar_vs_lambda.png
