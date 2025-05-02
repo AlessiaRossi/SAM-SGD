@@ -1,0 +1,50 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4095386
+[I 2025-04-27 20:04:08,838] A new study created in memory with name: no-name-0361a989-ba7f-42e3-97a7-2185b7ac81e5
+>>> Salvando il modello migliore in results/model_sgd_lambda_1.00_rho_None.pth
+[I 2025-04-27 20:09:35,553] Trial 0 finished with value: -0.77 and parameters: {'lambda_': 1.0}. Best is trial 0 with value: -0.77.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.90_rho_None.pth
+[I 2025-04-27 20:14:48,979] Trial 1 finished with value: -0.7936 and parameters: {'lambda_': 0.9}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.10_rho_None.pth
+[I 2025-04-27 20:20:03,639] Trial 2 finished with value: -0.7906 and parameters: {'lambda_': 0.1}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.55_rho_None.pth
+[I 2025-04-27 20:25:22,711] Trial 3 finished with value: -0.7704 and parameters: {'lambda_': 0.55}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.30_rho_None.pth
+[I 2025-04-27 20:30:42,470] Trial 4 finished with value: -0.7714 and parameters: {'lambda_': 0.30000000000000004}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.65_rho_None.pth
+[I 2025-04-27 20:35:56,518] Trial 5 finished with value: -0.7822 and parameters: {'lambda_': 0.65}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.65_rho_None.pth
+[I 2025-04-27 20:41:10,624] Trial 6 finished with value: -0.778 and parameters: {'lambda_': 0.65}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.15_rho_None.pth
+[I 2025-04-27 20:46:24,100] Trial 7 finished with value: -0.7916 and parameters: {'lambda_': 0.15000000000000002}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.65_rho_None.pth
+[I 2025-04-27 20:51:42,975] Trial 8 finished with value: -0.7754 and parameters: {'lambda_': 0.65}. Best is trial 1 with value: -0.7936.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.50_rho_None.pth
+[I 2025-04-27 20:56:56,289] Trial 9 finished with value: -0.7768 and parameters: {'lambda_': 0.5}. Best is trial 1 with value: -0.7936.
+>>> Miglior Lambda trovato: 0.9000
+>>> Training with SGD
+>>> Loss configuration: focal
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.90_rho_None.pth
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.90_rho_None.pth
+
+Total parameters: 3412394, Zero parameters: 0
+Stability: 2.072011540121821e-08, PredVar: 6.525788312234781e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.6224
+Validation Accuracy: 77.80%
+Test Loss: 0.6400
+Test Accuracy: 78.48%
+Lambda: 0.9
+Expected Calibration Error (ECE): 0.0856
+[Robustness Metrics]
+Robust Accuracy: 41.36%
+Flat Minima: 0.0028
+
+Traceback (most recent call last):
+  File "/cephyr/users/alessiar/Alvis/alessia-thesis/SAM-SGD/train.py", line 280, in <module>
+    save_metrics_csv(metrics_summary)
+  File "/cephyr/users/alessiar/Alvis/alessia-thesis/SAM-SGD/train.py", line 25, in save_metrics_csv
+    writer = csv.DictWriter(f, fieldnames=keys)
+             ^^^
+NameError: name 'csv' is not defined

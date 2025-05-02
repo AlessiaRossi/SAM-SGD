@@ -73,3 +73,13 @@ class SAM(torch.optim.Optimizer):
 class StandardSGD(TorchSGD):
     def __init__(self, params, lr=0.01, momentum=0.9, weight_decay=5e-4):
         super().__init__(params, lr=lr, momentum=momentum, weight_decay=weight_decay)
+
+
+def create_optimizer(model, args):
+    if args.optimizer == "sgd":
+        optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+        use_sam = False
+    else:
+        optimizer = SAM(model.parameters(), base_optimizer=torch.optim.SGD, rho=args.rho, adaptive=False, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+        use_sam = True
+    return optimizer, use_sam

@@ -1,0 +1,44 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4099314
+[I 2025-04-28 09:36:03,494] A new study created in memory with name: no-name-3008b066-7317-44fa-925e-464552592375
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.10_rho_None.pth
+[I 2025-04-28 09:41:30,228] Trial 0 finished with value: -0.7746 and parameters: {'lambda_': 0.1}. Best is trial 0 with value: -0.7746.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.00_rho_None.pth
+[I 2025-04-28 09:46:43,809] Trial 1 finished with value: -0.7838 and parameters: {'lambda_': 0.0}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.95_rho_None.pth
+[I 2025-04-28 09:51:57,182] Trial 2 finished with value: -0.7584 and parameters: {'lambda_': 0.9500000000000001}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.45_rho_None.pth
+[I 2025-04-28 09:57:11,342] Trial 3 finished with value: -0.783 and parameters: {'lambda_': 0.45}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.15_rho_None.pth
+[I 2025-04-28 10:02:25,995] Trial 4 finished with value: -0.777 and parameters: {'lambda_': 0.15000000000000002}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.85_rho_None.pth
+[I 2025-04-28 10:07:39,964] Trial 5 finished with value: -0.7532 and parameters: {'lambda_': 0.8500000000000001}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.60_rho_None.pth
+[I 2025-04-28 10:12:53,219] Trial 6 finished with value: -0.7796 and parameters: {'lambda_': 0.6000000000000001}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.65_rho_None.pth
+[I 2025-04-28 10:18:06,733] Trial 7 finished with value: -0.769 and parameters: {'lambda_': 0.65}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.40_rho_None.pth
+[I 2025-04-28 10:23:21,561] Trial 8 finished with value: -0.7754 and parameters: {'lambda_': 0.4}. Best is trial 1 with value: -0.7838.
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.05_rho_None.pth
+[I 2025-04-28 10:28:36,021] Trial 9 finished with value: -0.7844 and parameters: {'lambda_': 0.05}. Best is trial 9 with value: -0.7844.
+>>> Miglior Lambda trovato: 0.0500
+>>> Training with SGD
+>>> Loss configuration: focal
+>>> Salvando il modello migliore in results/model_sgd_lambda_0.05_rho_None.pth
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.05_rho_None.pth
+
+Total parameters: 3412394, Zero parameters: 0
+Stability: 1.8819131142322476e-08, PredVar: 4.390064192434737e-15
+
+Best Metrics:
+Epoch: 10
+Validation Loss: 0.6534
+Validation Accuracy: 78.18%
+Test Loss: 0.6381
+Test Accuracy: 78.32%
+Lambda: 0.05
+Expected Calibration Error (ECE): 0.0922
+[Robustness Metrics]
+Robust Accuracy: 33.88%
+Flat Minima: 0.0068
+
+Training completo e metriche salvate!

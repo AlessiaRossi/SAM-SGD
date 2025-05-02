@@ -15,14 +15,23 @@ def disable_running_stats(model):
 
 
 class Log:
-    def __init__(self, log_each, model_name, lambda_value, optimize_lambda, use_sam=False):
+    def __init__(self, log_each, model_name, lambda_value, optimize_lambda, use_sam=False, rho=None):
         self.log_each = log_each
         self.model_name = model_name
         self.lambda_value = lambda_value
         self.optimize_lambda = optimize_lambda
         self.use_sam = use_sam
+        self.rho = rho
         self.tracker = MetricsTracker()
-        self.best_model_path = f"results/{model_name}"
+
+        # Costruisci il percorso del file in base all'ottimizzatore
+        if self.use_sam:
+            if self.rho is None:
+                raise ValueError("Il parametro 'rho' deve essere specificato per l'ottimizzatore SAM.")
+            self.best_model_path = os.path.normpath(os.path.join("results", f"model_sam_lambda_{self.lambda_value:.2f}_rho_{self.rho:.2f}.pth"))
+        else:
+            self.best_model_path = os.path.normpath(os.path.join("results", f"model_sgd_lambda_{self.lambda_value:.2f}_rho_None.pth"))
+
         self.best_metrics = {
             "epoch": -1,
             "val_loss": float("inf"),
@@ -53,15 +62,13 @@ class Log:
             self.learning_rate = learning_rate
             
 
-    def flush(self, model=None):
+    def flush(self, model=None, current_accuracy=None):
         if not hasattr(self, "tracker") or self.is_train or self.tracker.steps == 0:
             return
 
         metrics = self.tracker.compute()
         if self.eval_label == "Validation" and metrics["accuracy"] > self.best_metrics["val_accuracy"]:
             self.best_metrics.update({"epoch": self.epoch, "val_loss": metrics["loss"], "val_accuracy": metrics["accuracy"]})
-            if model is not None:
-                self._save_if_best(model)
         elif self.eval_label == "Test":
             self.best_metrics.update({"test_loss": metrics["loss"], "test_accuracy": metrics["accuracy"]})
 
@@ -90,8 +97,14 @@ class Log:
             print(f"TRADES KL Divergence: {self.best_metrics['trades_kl']:.6f}")
             print()
             
-    def _save_if_best(self, model):
-        torch.save(model.state_dict(), self.best_model_path)
+    def _save_if_best(self, model, current_accuracy):
+        """
+        Salva il modello solo se è il migliore finora.
+        """
+        if self.best_model_path is not None and current_accuracy > self.best_metrics["val_accuracy"]:
+            os.makedirs(os.path.dirname(self.best_model_path), exist_ok=True)
+            torch.save(model.state_dict(), self.best_model_path)
+            self.best_metrics["val_accuracy"] = current_accuracy  # Aggiorna l'accuratezza migliore
         
     def store_trades_kl(self, avg_kl):
         self.best_metrics["trades_kl"] = avg_kl

@@ -135,6 +135,16 @@ class HuberLoss(nn.Module):
 
         return huber_loss.mean()
     
+class SALoss(nn.Module):
+    def __init__(self, noise_std=0.1):
+        super(SALoss, self).__init__()
+        self.noise_std = noise_std
+
+    def forward(self, logits, targets):
+        noise = torch.randn_like(logits) * self.noise_std
+        logits_noisy = logits + noise
+        return F.cross_entropy(logits_noisy, targets)
+    
 
 class CombinedLoss(nn.Module):
     def __init__(self, loss1, loss2, lambda_):

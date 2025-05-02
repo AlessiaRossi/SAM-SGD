@@ -1,0 +1,50 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4111652
+[I 2025-04-29 09:30:03,508] A new study created in memory with name: no-name-4422b81d-c22c-4e43-a3c5-c539df0c195a
+>>> Ottimizzazione di rho in corso...
+[I 2025-04-29 09:33:12,747] Trial 0 finished with value: 0.8219422619819641 and parameters: {'rho': 0.14}. Best is trial 0 with value: 0.8219422619819641.
+[I 2025-04-29 09:36:17,652] Trial 1 finished with value: 0.8884491872787476 and parameters: {'rho': 0.18000000000000002}. Best is trial 0 with value: 0.8219422619819641.
+[I 2025-04-29 09:39:22,700] Trial 2 finished with value: 1.0399805192947387 and parameters: {'rho': 0.13}. Best is trial 0 with value: 0.8219422619819641.
+[I 2025-04-29 09:42:27,816] Trial 3 finished with value: 0.7205959398269653 and parameters: {'rho': 0.15000000000000002}. Best is trial 3 with value: 0.7205959398269653.
+[I 2025-04-29 09:45:32,931] Trial 4 finished with value: 0.7702245191574096 and parameters: {'rho': 0.09}. Best is trial 3 with value: 0.7205959398269653.
+[I 2025-04-29 09:48:37,866] Trial 5 finished with value: 1.234305025100708 and parameters: {'rho': 0.19}. Best is trial 3 with value: 0.7205959398269653.
+[I 2025-04-29 09:51:42,848] Trial 6 finished with value: 0.9500645577430725 and parameters: {'rho': 0.01}. Best is trial 3 with value: 0.7205959398269653.
+[I 2025-04-29 09:54:47,687] Trial 7 finished with value: 1.0740915504455566 and parameters: {'rho': 0.18000000000000002}. Best is trial 3 with value: 0.7205959398269653.
+[I 2025-04-29 09:57:52,881] Trial 8 finished with value: 0.637594823551178 and parameters: {'rho': 0.08}. Best is trial 8 with value: 0.637594823551178.
+[I 2025-04-29 10:00:58,069] Trial 9 finished with value: 0.8973964097023011 and parameters: {'rho': 0.09}. Best is trial 8 with value: 0.637594823551178.
+[I 2025-04-29 10:00:58,072] A new study created in memory with name: no-name-2a926638-42f4-45c0-9ec5-602df43ab2f9
+Best rho: 0.08 with validation loss: 0.6376
+>>> Miglior rho trovato: 0.08
+>>> Salvando il modello migliore in results/model_sam_lambda_0.35_rho_0.08.pth
+[I 2025-04-29 10:06:47,411] Trial 0 finished with value: 0.7824 and parameters: {'lambda_': 0.35000000000000003}. Best is trial 0 with value: 0.7824.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.85_rho_0.08.pth
+[I 2025-04-29 10:12:36,833] Trial 1 finished with value: 0.737 and parameters: {'lambda_': 0.8500000000000001}. Best is trial 1 with value: 0.737.
+>>> Salvando il modello migliore in results/model_sam_lambda_1.00_rho_0.08.pth
+[I 2025-04-29 10:18:23,248] Trial 2 finished with value: 0.6668 and parameters: {'lambda_': 1.0}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.50_rho_0.08.pth
+[I 2025-04-29 10:24:11,051] Trial 3 finished with value: 0.7456 and parameters: {'lambda_': 0.5}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.15_rho_0.08.pth
+[I 2025-04-29 10:30:00,318] Trial 4 finished with value: 0.7708 and parameters: {'lambda_': 0.15000000000000002}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_1.00_rho_0.08.pth
+[I 2025-04-29 10:35:46,911] Trial 5 finished with value: 0.7368 and parameters: {'lambda_': 1.0}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.55_rho_0.08.pth
+[I 2025-04-29 10:41:35,206] Trial 6 finished with value: 0.7654 and parameters: {'lambda_': 0.55}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.50_rho_0.08.pth
+[I 2025-04-29 10:47:28,899] Trial 7 finished with value: 0.7798 and parameters: {'lambda_': 0.5}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.60_rho_0.08.pth
+[I 2025-04-29 10:53:15,525] Trial 8 finished with value: 0.7834 and parameters: {'lambda_': 0.6000000000000001}. Best is trial 2 with value: 0.6668.
+>>> Salvando il modello migliore in results/model_sam_lambda_0.05_rho_0.08.pth
+[I 2025-04-29 10:59:04,008] Trial 9 finished with value: 0.7526 and parameters: {'lambda_': 0.05}. Best is trial 2 with value: 0.6668.
+>>> Miglior Lambda trovato: 1.0000
+>>> Training with SAM
+>>> Loss configuration: focal
+>>> Training with SAM
+>>> Loss configuration: focal
+>>> Salvando il modello migliore in results/model_sam_lambda_1.00_rho_0.08.pth
+>>> Modello migliore ricaricato da results/model_sam_lambda_1.00_rho_0.08.pth
+
+Sharpness: 20784974.453322783
+Total parameters: 3412394, Zero parameters: 0
+Sparcity: 0.0, Path norm: 38.974677088251354
+Stability: 1.986946962517777e-08, PredVar: 6.492743015863549e-15
+Risultati aggiunti a results/metrics_summary.csv
+Training completo e metriche salvate!

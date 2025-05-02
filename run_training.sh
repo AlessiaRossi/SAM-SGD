@@ -14,7 +14,7 @@ module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1
 # Attiva il virtual environment
 source .venv/bin/activate
 
-# Esegui il tuo script Python, per loss usare focal , logitnorm, trades, huber
+# Esegui il tuo script Python, per loss usare focal , logitnorm, trades, huber , saloss
 # --optimize_rho 
 python train.py \
     --batch_size 128 \
@@ -30,7 +30,7 @@ python train.py \
     --loss_type focal \
     --optimize_lambda \
     --optimizer sam \
-    --optimize_rho    
+    --optimize_rho 
     
     
     

@@ -96,3 +96,27 @@ Expected Calibration Error (ECE): 0.0802
 Robust Accuracy: 37.46%
 Flat Minima: 0.0032
 
+>>> Modello migliore ricaricato da results/model_sgd_1.00.pth
+
+Sharpness: 0.735019
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 36.105276
+Stability: 2.107724483835227e-08, PredVar: 5.813078696789015e-15
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.5282
+Validation Accuracy: 74.76%
+Test Loss: 0.7350
+Test Accuracy: 74.58%
+Lambda: 1.0
+Expected Calibration Error (ECE): 0.0912
+[Robustness Metrics]
+Robust Accuracy: 39.50%
+Flat Minima: 0.0042
+
+Plotting weight analysis...
+Grafico salvato in sparsity_vs_lambda.png
+Grafico salvato in pathnorm_vs_lambda.png
+Grafico salvato in stability_vs_lambda.png
+Grafico salvato in predvar_vs_lambda.png

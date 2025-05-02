@@ -21,6 +21,7 @@ def compute_sparsity_and_pathnorm(model):
     print(f"Total parameters: {total_params}, Zero parameters: {zero_params}") # per capire meglio sparcity
     sparsity = zero_params / total_params if total_params > 0 else 0.0
     path_norm = np.sqrt(path_norm)
+    print(f"Sparcity: {sparsity}, Path norm: {path_norm}")
     return sparsity, path_norm
 
 
@@ -73,7 +74,9 @@ def compute_sharpness(model, dataloader, criterion, device, rho):
         sharpness_sum += perturbed_loss.item()
         num_batches += 1
 
-    return sharpness_sum / num_batches if num_batches > 0 else 0.0
+    sharpness=sharpness_sum / num_batches if num_batches > 0 else 0.0
+    print(f"Sharpness: {sharpness}")
+    return sharpness
 
 
 def load_model(model_fn, model_path, device):

@@ -1,0 +1,71 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4094585
+[I 2025-04-27 16:45:39,850] A new study created in memory with name: no-name-72b99ef7-5277-4c73-820e-712d7b9a01eb
+>>> Training with SAM
+>>> Loss configuration: focal
+[I 2025-04-27 16:48:44,683] Trial 0 finished with value: 0.6986182583808899 and parameters: {'rho': 0.060000000000000005}. Best is trial 0 with value: 0.6986182583808899.
+[I 2025-04-27 16:51:48,634] Trial 1 finished with value: 0.7529637237548829 and parameters: {'rho': 0.14}. Best is trial 0 with value: 0.6986182583808899.
+[I 2025-04-27 16:54:52,793] Trial 2 finished with value: 0.6635548175811767 and parameters: {'rho': 0.09999999999999999}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 16:57:56,786] Trial 3 finished with value: 0.8364881478428841 and parameters: {'rho': 0.19}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 17:01:00,722] Trial 4 finished with value: 0.6786471421718597 and parameters: {'rho': 0.08}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 17:04:04,651] Trial 5 finished with value: 0.8269961664199829 and parameters: {'rho': 0.01}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 17:07:08,553] Trial 6 finished with value: 0.7038917356014252 and parameters: {'rho': 0.15000000000000002}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 17:10:17,830] Trial 7 finished with value: 0.8786436084628105 and parameters: {'rho': 0.02}. Best is trial 2 with value: 0.6635548175811767.
+[I 2025-04-27 17:13:21,665] Trial 8 finished with value: 0.6368571495056152 and parameters: {'rho': 0.08}. Best is trial 8 with value: 0.6368571495056152.
+[I 2025-04-27 17:16:26,178] Trial 9 finished with value: 0.8943165870666504 and parameters: {'rho': 0.15000000000000002}. Best is trial 8 with value: 0.6368571495056152.
+Best rho: 0.08 with validation loss: 0.6369
+>>> Miglior rho trovato per lambda = 0.00: 0.0800
+>>> Modello migliore ricaricato da results/model_sam_0.00.pth
+
+Sharpness: 94773530.170886
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 36.053932
+[I 2025-04-27 17:22:26,592] A new study created in memory with name: no-name-f3942f1b-7fad-425d-b456-c562695ce95f
+Stability: 1.952370709545903e-08, PredVar: 5.219124371097722e-15
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.4530
+Validation Accuracy: 78.70%
+Test Loss: 0.5989
+Test Accuracy: 79.47%
+Lambda: 0.0
+Expected Calibration Error (ECE): 0.0845
+[Robustness Metrics]
+Robust Accuracy: 40.80%
+Flat Minima: 0.0029
+
+[I 2025-04-27 17:25:30,706] Trial 0 finished with value: 0.886152163028717 and parameters: {'rho': 0.03}. Best is trial 0 with value: 0.886152163028717.
+[I 2025-04-27 17:28:34,772] Trial 1 finished with value: 0.8286084798336029 and parameters: {'rho': 0.19}. Best is trial 1 with value: 0.8286084798336029.
+[I 2025-04-27 17:31:38,820] Trial 2 finished with value: 0.5956967251777648 and parameters: {'rho': 0.01}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:34:43,147] Trial 3 finished with value: 0.7630860701084137 and parameters: {'rho': 0.09999999999999999}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:37:52,577] Trial 4 finished with value: 0.8540475226104259 and parameters: {'rho': 0.17}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:40:57,086] Trial 5 finished with value: 1.1749561958312988 and parameters: {'rho': 0.18000000000000002}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:44:01,806] Trial 6 finished with value: 0.840028724193573 and parameters: {'rho': 0.12}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:47:06,412] Trial 7 finished with value: 0.6949829937219619 and parameters: {'rho': 0.08}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:50:10,496] Trial 8 finished with value: 0.9424450707435608 and parameters: {'rho': 0.11}. Best is trial 2 with value: 0.5956967251777648.
+[I 2025-04-27 17:53:14,604] Trial 9 finished with value: 0.977547835445404 and parameters: {'rho': 0.09999999999999999}. Best is trial 2 with value: 0.5956967251777648.
+Best rho: 0.01 with validation loss: 0.5957
+>>> Miglior rho trovato per lambda = 0.20: 0.0100
+>>> Modello migliore ricaricato da results/model_sam_0.20.pth
+
+Sharpness: 0.723670
+Total parameters: 3412394, Zero parameters: 0
+Sparsity: 0.000000, Path Norm: 35.198982
+[I 2025-04-27 17:59:14,779] A new study created in memory with name: no-name-6c8840ed-7891-401f-8012-d0f6f43aeb6d
+Stability: 2.1884627443569116e-08, PredVar: 6.676058733341272e-15
+
+Best Metrics:
+Epoch: 9
+Validation Loss: 0.4963
+Validation Accuracy: 76.52%
+Test Loss: 0.6922
+Test Accuracy: 76.67%
+Lambda: 0.2
+Expected Calibration Error (ECE): 0.0946
+[Robustness Metrics]
+Robust Accuracy: 45.87%
+Flat Minima: 0.0035
+
+[I 2025-04-27 18:02:18,967] Trial 0 finished with value: 0.6699061763763428 and parameters: {'rho': 0.09999999999999999}. Best is trial 0 with value: 0.6699061763763428.
+[I 2025-04-27 18:05:23,208] Trial 1 finished with value: 0.9306281573295593 and parameters: {'rho': 0.16}. Best is trial 0 with value: 0.6699061763763428.
+slurmstepd: error: *** JOB 4094585 ON alvis7-06 CANCELLED AT 2025-04-27T18:05:45 ***
