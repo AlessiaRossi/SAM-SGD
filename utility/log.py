@@ -98,9 +98,6 @@ class Log:
             print()
             
     def _save_if_best(self, model, current_accuracy):
-        """
-        Salva il modello solo se è il migliore finora.
-        """
         if self.best_model_path is not None and current_accuracy > self.best_metrics["val_accuracy"]:
             os.makedirs(os.path.dirname(self.best_model_path), exist_ok=True)
             torch.save(model.state_dict(), self.best_model_path)

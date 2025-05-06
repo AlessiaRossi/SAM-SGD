@@ -86,7 +86,7 @@ def _evaluate(model, dataloader, criterion, device):
 
             if isinstance(criterion, CombinedLoss) and isinstance(criterion.loss2, TRADESLoss):
                 # Evita perturbazioni adversariali in validazione: usa solo la CE
-                loss = criterion.loss1(outputs, targets)
+                loss = criterion(model, inputs, targets)
             elif isinstance(criterion, CombinedLoss):
                 loss = criterion(model, inputs, targets)
             else:
@@ -122,7 +122,7 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False, lambda
         logitnorm_loss = LogitNormLoss(device=device, t=1.0)
         criterion = CombinedLoss(loss1=ce_loss, loss2=logitnorm_loss, lambda_=lambda_value)
     elif args.loss_type == "trades":
-        trades_loss = TRADESLoss(model=model, optimizer=optimizer, step_size=0.003, epsilon=0.031, perturb_steps=10, beta=6.0, distance='l_inf')
+        trades_loss = TRADESLoss(model=model, optimizer=optimizer, step_size=0.003, epsilon=0.031, perturb_steps=5, beta=1.0, distance='l_inf')
         criterion = CombinedLoss(loss1=ce_loss, loss2=trades_loss, lambda_=lambda_value)
     elif args.loss_type == "huber":
         huber_loss = HuberLoss(delta=1.0)
@@ -163,9 +163,6 @@ def train(model, optimizer, scheduler, dataset, args, log, use_sam=False, lambda
             best_model_path = model_path
             os.makedirs(os.path.dirname(model_path), exist_ok=True)
             torch.save(model.state_dict(), model_path)
-            print(f">>> Salvando il miglior modello del trial in {model_path}")
-        else:
-            print(f">>> Modello non migliorato. Accuratezza attuale: {val_acc:.4f}, Migliore: {best_val_accuracy:.4f}")
 
         # Aggiorna il miglior modello del trial corrente
         if val_acc > best_val_accuracy_trial:
@@ -229,13 +226,71 @@ def optimize_lambda_with_optuna(train_fn, model_fn, dataset, args, n_trials=20):
         val_loss, val_acc = _evaluate(model, dataset["val"], criterion.loss1 if isinstance(criterion, CombinedLoss) and isinstance(criterion.loss2, TRADESLoss) else criterion, device)
         return val_acc 
 
-    study = optuna.create_study(direction="minimize")
+    study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=n_trials)
 
     best_lambda = study.best_params["lambda_"]
     print(f">>> Miglior Lambda trovato: {best_lambda:.4f}")
 
     return best_lambda
+
+def optimize_rho_lambda_with_optuna(train_fn, model_fn, dataset, args, n_trials=20):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    best_global_val_acc = 0.0
+    best_global_model_path = None
+    best_params = {}
+    
+    def objective(trial):
+        nonlocal best_global_val_acc, best_global_model_path, best_params
+        
+        rho = trial.suggest_float("rho", 0.01, 0.2, step=0.01)
+        lambda_value = trial.suggest_float("lambda_", 0.0, 1.0, step=0.05)
+
+        args.rho = rho
+        args.lambda_ = lambda_value
+
+        model = model_fn(num_classes=dataset["train"].dataset.dataset.classes).to(device)
+        optimizer, use_sam = create_optimizer(model, args)
+        scheduler = StepLR(optimizer.base_optimizer if use_sam else optimizer, step_size=30, gamma=0.1)
+
+        model_path = f"results/model_sam_lambda_{lambda_value:.2f}_rho_{rho:.2f}.pth"
+        log = Log(
+            log_each=10,
+            model_name=model_path,
+            lambda_value=lambda_value,
+            optimize_lambda=True,
+            use_sam=use_sam,
+            rho=rho
+        )
+
+        criterion = train_fn(model, optimizer, scheduler, dataset, args, log, use_sam=use_sam, lambda_value=lambda_value, model_path=model_path)
+        val_loss, val_acc = _evaluate(model, dataset["val"], criterion.loss1 if isinstance(criterion, CombinedLoss) and isinstance(criterion.loss2, TRADESLoss) else criterion, device)
+        
+        print(f"[Trial {trial.number}] lambda: {lambda_value:.2f}, rho: {rho:.2f}, val_loss: {val_loss:.4f}, val_acc: {val_acc:.4f}")
+
+        if val_acc > best_global_val_acc:
+            best_global_val_acc = val_acc
+            best_global_model_path = model_path
+            best_params = {"rho": rho, "lambda_": lambda_value}
+            os.makedirs(os.path.dirname(model_path), exist_ok=True)
+            torch.save(model.state_dict(), model_path)
+            print(f">>> 🔥 Nuovo miglior modello globale salvato in {best_global_model_path}")
+        else:
+            print(">>> ❌ Trial peggiore del migliore globale. Nessun aggiornamento del modello.")
+
+
+        return val_acc  
+
+    study = optuna.create_study(direction="maximize")
+    study.optimize(objective, n_trials=n_trials)
+
+    best_rho = study.best_params["rho"]
+    best_lambda = study.best_params["lambda_"]
+    print(f">>> Miglior combinazione trovata: rho = {best_rho:.3f}, lambda = {best_lambda:.2f}, val_acc = {-study.best_value:.4f}")
+    print(f">>> Modello migliore salvato in: {best_global_model_path}")
+
+
+    return best_rho, best_lambda
 
 
 def load_dataset(name, batch_size):
@@ -291,6 +346,7 @@ if __name__ == "__main__":
     parser.add_argument("--loss_type", default="focal", type=str)
     parser.add_argument("--optimizer", default="sgd", type=str, choices=["sgd", "sam"])
     parser.add_argument("--n_trials", default=10, type=int)
+    parser.add_argument("--optimize_rho_lambda", action="store_true")
     args = parser.parse_args()
     sparsity_values = []
     path_norm_values = []
@@ -302,6 +358,7 @@ if __name__ == "__main__":
     args.device = device
 
     dataset, num_classes = load_dataset(args.dataset, args.batch_size)
+    train_loader = DataLoader(dataset["train"], batch_size=args.batch_size, shuffle=True, num_workers=4)  # aggiunto 
     model_fn = {2: WRN56_2, 4: WRN56_4, 8: WRN56_8}.get(args.depth)
     if model_fn is None:
         raise ValueError(f"Unsupported depth {args.depth}")
@@ -321,6 +378,8 @@ if __name__ == "__main__":
         )
         args.rho = best_rho
         print(f">>> Miglior rho trovato: {args.rho}")
+        
+    
 
     if args.optimize_lambda:
         best_lambda = optimize_lambda_with_optuna(train, model_fn, dataset, args, n_trials=args.n_trials)
@@ -331,6 +390,22 @@ if __name__ == "__main__":
         lambda_values = [round(start + i * step, 2) for i in range(int((end - start) / step) + 1)]
     print(f">>> Training with {args.optimizer.upper()}\n>>> Loss configuration: {args.loss_type}")
     metrics_summary = []
+    
+    if args.optimize_rho_lambda:
+        print(">>> Ottimizzazione combinata di rho e lambda in corso...")
+        best_rho, best_lambda = optimize_rho_lambda_with_optuna(train, model_fn, dataset, args, n_trials=args.n_trials)
+        args.rho = best_rho
+        args.lambda_ = best_lambda
+        lambda_values = [best_lambda]
+
+    elif args.optimize_lambda:
+        best_lambda = optimize_lambda_with_optuna(train, model_fn, dataset, args, n_trials=args.n_trials)
+        args.lambda_ = best_lambda
+        lambda_values = [best_lambda]
+
+    else:
+        start, end, step = map(float, args.lambda_range.split(","))
+        lambda_values = [round(start + i * step, 2) for i in range(int((end - start) / step) + 1)]
 
     print(f">>> Training with {args.optimizer.upper()}\n>>> Loss configuration: {args.loss_type}")
     for lambda_value in lambda_values:
@@ -352,9 +427,12 @@ if __name__ == "__main__":
             rho=args.rho if use_sam else None
         )
 
-        # Verifica che il file esista prima di caricarlo
-        if not os.path.exists(log.best_model_path):
-            raise FileNotFoundError(f"Il file del modello non esiste: {log.best_model_path}")
+        if os.path.exists(log.best_model_path):
+            model.load_state_dict(torch.load(log.best_model_path))
+            model.to(device)
+            print(f">>> Modello migliore ricaricato da {log.best_model_path}")
+        else:
+            print(f">>> ⚠️ Nessun file trovato in {log.best_model_path}, skip del caricamento modello.")
 
         # Carica il modello
         model.load_state_dict(torch.load(log.best_model_path))
@@ -371,9 +449,14 @@ if __name__ == "__main__":
 
         # Calcola nuovamente validation loss e accuracy per memorizzarle nei log
         log.eval(len_dataset=len(dataset["val"]), label="Validation")
-        val_loss, val_acc = _evaluate(model, dataset["val"], criterion, device)
+        val_loss, val_acc = _evaluate(
+            model,
+            dataset["val"],
+            criterion.loss1 if isinstance(criterion, CombinedLoss) and isinstance(criterion.loss2, TRADESLoss) else criterion,
+            device
+        )
         log(model, loss=val_loss, accuracy=val_acc)
-        log.flush()
+        log.flush(model=model, current_accuracy=val_acc)
 
         # Test set
         test_loss, test_acc = _evaluate(model, dataset["test"], nn.CrossEntropyLoss(), device)

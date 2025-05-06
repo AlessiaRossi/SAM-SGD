@@ -1,0 +1,558 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4159270
+[I 2025-05-05 09:25:26,459] A new study created in memory with name: no-name-67f4c30a-fbd7-4997-8619-451312f71d59
+Valutazione - Loss: 2.0484, Accuracy: 0.2304
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.7421, Accuracy: 0.3542
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.5629, Accuracy: 0.4320
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.4972, Accuracy: 0.4656
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.4923, Accuracy: 0.4760
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.2627, Accuracy: 0.5580
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.1713, Accuracy: 0.5804
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.0005, Accuracy: 0.6440
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.9508, Accuracy: 0.6586
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.1410, Accuracy: 0.6374
+>>> Modello non migliorato. Accuratezza attuale: 0.6374, Migliore: 0.6586
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth con accuratezza: 0.6586
+Valutazione finale - Loss: 0.9508, Accuracy: 0.6586
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.40_rho_None.pth
+[I 2025-05-05 09:30:51,489] Trial 0 finished with value: 0.6416 and parameters: {'lambda_': 0.4}. Best is trial 0 with value: 0.6416.
+Valutazione - Loss: 1.1304, Accuracy: 0.6416
+Valutazione - Loss: 1.7736, Accuracy: 0.3344
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.7256, Accuracy: 0.3722
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.3304, Accuracy: 0.5168
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.2031, Accuracy: 0.5796
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.0195, Accuracy: 0.6452
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.1064, Accuracy: 0.6168
+>>> Modello non migliorato. Accuratezza attuale: 0.6168, Migliore: 0.6452
+Valutazione - Loss: 1.0367, Accuracy: 0.6464
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.7931, Accuracy: 0.7218
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8023, Accuracy: 0.7232
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.7731, Accuracy: 0.7364
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth con accuratezza: 0.7364
+Valutazione finale - Loss: 0.7731, Accuracy: 0.7364
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.10_rho_None.pth
+[I 2025-05-05 09:36:08,230] Trial 1 finished with value: 0.7376 and parameters: {'lambda_': 0.1}. Best is trial 1 with value: 0.7376.
+Valutazione - Loss: 0.7756, Accuracy: 0.7376
+Valutazione - Loss: 2.0304, Accuracy: 0.2170
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 1.8483, Accuracy: 0.2930
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 1.5729, Accuracy: 0.4094
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 1.4665, Accuracy: 0.4786
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 1.2355, Accuracy: 0.5762
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 1.1515, Accuracy: 0.6438
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 0.8522, Accuracy: 0.7058
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 0.7645, Accuracy: 0.7286
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 0.7144, Accuracy: 0.7488
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+Valutazione - Loss: 0.6316, Accuracy: 0.7762
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.45_rho_None.pth con accuratezza: 0.7762
+Valutazione finale - Loss: 0.6316, Accuracy: 0.7762
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.45_rho_None.pth
+[I 2025-05-05 09:41:26,333] Trial 2 finished with value: 0.7754 and parameters: {'lambda_': 0.45}. Best is trial 2 with value: 0.7754.
+Valutazione - Loss: 0.6511, Accuracy: 0.7754
+Valutazione - Loss: 1.8337, Accuracy: 0.3022
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.6112, Accuracy: 0.4160
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.3564, Accuracy: 0.5160
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.0308, Accuracy: 0.6296
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.9928, Accuracy: 0.6436
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8537, Accuracy: 0.7006
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.7266, Accuracy: 0.7376
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8799, Accuracy: 0.7094
+>>> Modello non migliorato. Accuratezza attuale: 0.7094, Migliore: 0.7376
+Valutazione - Loss: 0.6690, Accuracy: 0.7592
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.6502, Accuracy: 0.7786
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth con accuratezza: 0.7786
+Valutazione finale - Loss: 0.6502, Accuracy: 0.7786
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.10_rho_None.pth
+[I 2025-05-05 09:46:46,161] Trial 3 finished with value: 0.7786 and parameters: {'lambda_': 0.1}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.6422, Accuracy: 0.7786
+Valutazione - Loss: 1.8538, Accuracy: 0.2952
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.5267, Accuracy: 0.4270
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.6342, Accuracy: 0.4142
+>>> Modello non migliorato. Accuratezza attuale: 0.4142, Migliore: 0.4270
+Valutazione - Loss: 1.1854, Accuracy: 0.5656
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.0955, Accuracy: 0.6150
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.9592, Accuracy: 0.6550
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.0095, Accuracy: 0.6474
+>>> Modello non migliorato. Accuratezza attuale: 0.6474, Migliore: 0.6550
+Valutazione - Loss: 0.8167, Accuracy: 0.7188
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.6791, Accuracy: 0.7620
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.6817, Accuracy: 0.7584
+>>> Modello non migliorato. Accuratezza attuale: 0.7584, Migliore: 0.7620
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth con accuratezza: 0.7620
+Valutazione finale - Loss: 0.6791, Accuracy: 0.7620
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.00_rho_None.pth
+[I 2025-05-05 09:52:01,932] Trial 4 finished with value: 0.757 and parameters: {'lambda_': 0.0}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.6786, Accuracy: 0.7570
+Valutazione - Loss: 2.0001, Accuracy: 0.2350
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.7659, Accuracy: 0.3354
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.5308, Accuracy: 0.4300
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.3229, Accuracy: 0.5354
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.1306, Accuracy: 0.6148
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.9943, Accuracy: 0.6462
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.8474, Accuracy: 0.6918
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.7512, Accuracy: 0.7338
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.7862, Accuracy: 0.7298
+>>> Modello non migliorato. Accuratezza attuale: 0.7298, Migliore: 0.7338
+Valutazione - Loss: 0.9697, Accuracy: 0.6702
+>>> Modello non migliorato. Accuratezza attuale: 0.6702, Migliore: 0.7338
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth con accuratezza: 0.7338
+Valutazione finale - Loss: 0.7512, Accuracy: 0.7338
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.05_rho_None.pth
+[I 2025-05-05 09:57:19,610] Trial 5 finished with value: 0.6754 and parameters: {'lambda_': 0.05}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.9561, Accuracy: 0.6754
+Valutazione - Loss: 1.8749, Accuracy: 0.2878
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.6870, Accuracy: 0.3974
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.3694, Accuracy: 0.5072
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.1896, Accuracy: 0.5830
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.9077, Accuracy: 0.6706
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.9077, Accuracy: 0.6872
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.7913, Accuracy: 0.7370
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.7356, Accuracy: 0.7516
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.7255, Accuracy: 0.7516
+>>> Modello non migliorato. Accuratezza attuale: 0.7516, Migliore: 0.7516
+Valutazione - Loss: 0.6718, Accuracy: 0.7710
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth con accuratezza: 0.7710
+Valutazione finale - Loss: 0.6718, Accuracy: 0.7710
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.00_rho_None.pth
+[I 2025-05-05 10:02:36,079] Trial 6 finished with value: 0.7692 and parameters: {'lambda_': 0.0}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.6740, Accuracy: 0.7692
+Valutazione - Loss: 1.9628, Accuracy: 0.2888
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 1.6304, Accuracy: 0.4106
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 1.5625, Accuracy: 0.4478
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 1.3160, Accuracy: 0.5264
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 1.1844, Accuracy: 0.5638
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 0.9933, Accuracy: 0.6464
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 1.0693, Accuracy: 0.6352
+>>> Modello non migliorato. Accuratezza attuale: 0.6352, Migliore: 0.6464
+Valutazione - Loss: 0.7534, Accuracy: 0.7318
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 0.7302, Accuracy: 0.7468
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+Valutazione - Loss: 0.7205, Accuracy: 0.7494
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.85_rho_None.pth con accuratezza: 0.7494
+Valutazione finale - Loss: 0.7205, Accuracy: 0.7494
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.85_rho_None.pth
+[I 2025-05-05 10:07:54,305] Trial 7 finished with value: 0.7508 and parameters: {'lambda_': 0.8500000000000001}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.7166, Accuracy: 0.7508
+Valutazione - Loss: 1.9674, Accuracy: 0.2188
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.6537, Accuracy: 0.3752
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.5427, Accuracy: 0.4334
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.3394, Accuracy: 0.5264
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.3149, Accuracy: 0.5386
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.0823, Accuracy: 0.6162
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 1.0177, Accuracy: 0.6454
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8550, Accuracy: 0.6984
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8766, Accuracy: 0.7034
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth
+Valutazione - Loss: 0.8723, Accuracy: 0.6976
+>>> Modello non migliorato. Accuratezza attuale: 0.6976, Migliore: 0.7034
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.10_rho_None.pth con accuratezza: 0.7034
+Valutazione finale - Loss: 0.8766, Accuracy: 0.7034
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.10_rho_None.pth
+[I 2025-05-05 10:13:11,708] Trial 8 finished with value: 0.6956 and parameters: {'lambda_': 0.1}. Best is trial 3 with value: 0.7786.
+Valutazione - Loss: 0.8661, Accuracy: 0.6956
+Valutazione - Loss: 1.9124, Accuracy: 0.2770
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 1.5720, Accuracy: 0.4092
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 1.3685, Accuracy: 0.5124
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 1.3513, Accuracy: 0.5292
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.9153, Accuracy: 0.6716
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.8426, Accuracy: 0.6860
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.8173, Accuracy: 0.7176
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.7497, Accuracy: 0.7360
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.6681, Accuracy: 0.7652
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+Valutazione - Loss: 0.6494, Accuracy: 0.7702
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.15_rho_None.pth con accuratezza: 0.7702
+Valutazione finale - Loss: 0.6494, Accuracy: 0.7702
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.15_rho_None.pth
+[I 2025-05-05 10:18:30,033] Trial 9 finished with value: 0.7722 and parameters: {'lambda_': 0.15000000000000002}. Best is trial 3 with value: 0.7786.
+[I 2025-05-05 10:18:30,034] A new study created in memory with name: no-name-9cd13f31-b5a4-4d32-b4fc-81aa2fb74ffb
+Valutazione - Loss: 0.6353, Accuracy: 0.7722
+>>> Miglior Lambda trovato: 0.1000
+>>> Training with SGD
+>>> Loss configuration: saloss
+Valutazione - Loss: 1.8899, Accuracy: 0.3018
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.6175, Accuracy: 0.3994
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.4297, Accuracy: 0.4692
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.3721, Accuracy: 0.5018
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.0982, Accuracy: 0.6010
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.0155, Accuracy: 0.6338
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 1.1051, Accuracy: 0.6290
+>>> Modello non migliorato. Accuratezza attuale: 0.6290, Migliore: 0.6338
+Valutazione - Loss: 0.8004, Accuracy: 0.7276
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.7938, Accuracy: 0.7312
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+Valutazione - Loss: 0.6828, Accuracy: 0.7616
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.05_rho_None.pth con accuratezza: 0.7616
+Valutazione finale - Loss: 0.6828, Accuracy: 0.7616
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.05_rho_None.pth
+[I 2025-05-05 10:23:48,004] Trial 0 finished with value: 0.7574 and parameters: {'lambda_': 0.05}. Best is trial 0 with value: 0.7574.
+Valutazione - Loss: 0.6948, Accuracy: 0.7574
+Valutazione - Loss: 1.8930, Accuracy: 0.2560
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 1.6412, Accuracy: 0.3828
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 1.5586, Accuracy: 0.4264
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 1.2003, Accuracy: 0.5728
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 1.2714, Accuracy: 0.5368
+>>> Modello non migliorato. Accuratezza attuale: 0.5368, Migliore: 0.5728
+Valutazione - Loss: 0.9356, Accuracy: 0.6608
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 1.0302, Accuracy: 0.6566
+>>> Modello non migliorato. Accuratezza attuale: 0.6566, Migliore: 0.6608
+Valutazione - Loss: 0.9989, Accuracy: 0.6780
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 0.7321, Accuracy: 0.7462
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+Valutazione - Loss: 0.7025, Accuracy: 0.7578
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.95_rho_None.pth con accuratezza: 0.7578
+Valutazione finale - Loss: 0.7025, Accuracy: 0.7578
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.95_rho_None.pth
+[I 2025-05-05 10:29:05,227] Trial 1 finished with value: 0.7518 and parameters: {'lambda_': 0.9500000000000001}. Best is trial 0 with value: 0.7574.
+Valutazione - Loss: 0.7089, Accuracy: 0.7518
+Valutazione - Loss: 1.8447, Accuracy: 0.3042
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.5810, Accuracy: 0.4318
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.3455, Accuracy: 0.5160
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.2552, Accuracy: 0.5570
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.9825, Accuracy: 0.6586
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.8060, Accuracy: 0.7160
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.7785, Accuracy: 0.7294
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.8345, Accuracy: 0.7152
+>>> Modello non migliorato. Accuratezza attuale: 0.7152, Migliore: 0.7294
+Valutazione - Loss: 0.6853, Accuracy: 0.7648
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.6582, Accuracy: 0.7712
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth con accuratezza: 0.7712
+Valutazione finale - Loss: 0.6582, Accuracy: 0.7712
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.40_rho_None.pth
+[I 2025-05-05 10:34:23,481] Trial 2 finished with value: 0.772 and parameters: {'lambda_': 0.4}. Best is trial 2 with value: 0.772.
+Valutazione - Loss: 0.6497, Accuracy: 0.7720
+Valutazione - Loss: 1.9342, Accuracy: 0.2734
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.6958, Accuracy: 0.3660
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.4464, Accuracy: 0.4740
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.3240, Accuracy: 0.5200
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.1822, Accuracy: 0.5746
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.0217, Accuracy: 0.6352
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.9582, Accuracy: 0.6648
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.7877, Accuracy: 0.7256
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.7576, Accuracy: 0.7358
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.7999, Accuracy: 0.7264
+>>> Modello non migliorato. Accuratezza attuale: 0.7264, Migliore: 0.7358
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth con accuratezza: 0.7358
+Valutazione finale - Loss: 0.7576, Accuracy: 0.7358
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.20_rho_None.pth
+[I 2025-05-05 10:39:40,376] Trial 3 finished with value: 0.7238 and parameters: {'lambda_': 0.2}. Best is trial 2 with value: 0.772.
+Valutazione - Loss: 0.8041, Accuracy: 0.7238
+Valutazione - Loss: 1.9069, Accuracy: 0.2928
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.4548, Accuracy: 0.4594
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.2586, Accuracy: 0.5484
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.1677, Accuracy: 0.5848
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.9781, Accuracy: 0.6432
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.8305, Accuracy: 0.7028
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.8615, Accuracy: 0.6942
+>>> Modello non migliorato. Accuratezza attuale: 0.6942, Migliore: 0.7028
+Valutazione - Loss: 0.8807, Accuracy: 0.6980
+>>> Modello non migliorato. Accuratezza attuale: 0.6980, Migliore: 0.7028
+Valutazione - Loss: 0.9515, Accuracy: 0.7276
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.7880, Accuracy: 0.7318
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth con accuratezza: 0.7318
+Valutazione finale - Loss: 0.7880, Accuracy: 0.7318
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.20_rho_None.pth
+[I 2025-05-05 10:45:00,759] Trial 4 finished with value: 0.7282 and parameters: {'lambda_': 0.2}. Best is trial 2 with value: 0.772.
+Valutazione - Loss: 0.7975, Accuracy: 0.7282
+Valutazione - Loss: 2.0179, Accuracy: 0.2668
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.6725, Accuracy: 0.3964
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.4440, Accuracy: 0.4764
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.3944, Accuracy: 0.5014
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.2304, Accuracy: 0.5616
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.1362, Accuracy: 0.5932
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 1.2416, Accuracy: 0.5926
+>>> Modello non migliorato. Accuratezza attuale: 0.5926, Migliore: 0.5932
+Valutazione - Loss: 1.0223, Accuracy: 0.6482
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.9470, Accuracy: 0.6710
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+Valutazione - Loss: 0.8722, Accuracy: 0.7030
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.20_rho_None.pth con accuratezza: 0.7030
+Valutazione finale - Loss: 0.8722, Accuracy: 0.7030
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.20_rho_None.pth
+[I 2025-05-05 10:50:18,954] Trial 5 finished with value: 0.7032 and parameters: {'lambda_': 0.2}. Best is trial 2 with value: 0.772.
+Valutazione - Loss: 0.8622, Accuracy: 0.7032
+Valutazione - Loss: 1.9480, Accuracy: 0.2812
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.7792, Accuracy: 0.3650
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.5209, Accuracy: 0.4396
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.3757, Accuracy: 0.5014
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.0991, Accuracy: 0.6186
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 1.0070, Accuracy: 0.6454
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.8380, Accuracy: 0.6982
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.7356, Accuracy: 0.7434
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.6568, Accuracy: 0.7678
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+Valutazione - Loss: 0.6134, Accuracy: 0.7846
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.40_rho_None.pth con accuratezza: 0.7846
+Valutazione finale - Loss: 0.6134, Accuracy: 0.7846
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.40_rho_None.pth
+[I 2025-05-05 10:55:47,943] Trial 6 finished with value: 0.7838 and parameters: {'lambda_': 0.4}. Best is trial 6 with value: 0.7838.
+Valutazione - Loss: 0.6173, Accuracy: 0.7838
+Valutazione - Loss: 1.9413, Accuracy: 0.2452
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.6988, Accuracy: 0.3540
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.3898, Accuracy: 0.4934
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.2412, Accuracy: 0.5560
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.1501, Accuracy: 0.5890
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 1.0021, Accuracy: 0.6414
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.8342, Accuracy: 0.7042
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.8559, Accuracy: 0.7112
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.6789, Accuracy: 0.7616
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+Valutazione - Loss: 0.6659, Accuracy: 0.7702
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.00_rho_None.pth con accuratezza: 0.7702
+Valutazione finale - Loss: 0.6659, Accuracy: 0.7702
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.00_rho_None.pth
+[I 2025-05-05 11:01:04,409] Trial 7 finished with value: 0.7724 and parameters: {'lambda_': 0.0}. Best is trial 6 with value: 0.7838.
+Valutazione - Loss: 0.6530, Accuracy: 0.7724
+Valutazione - Loss: 1.9952, Accuracy: 0.2532
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 1.6554, Accuracy: 0.3900
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 1.5196, Accuracy: 0.4382
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 1.3809, Accuracy: 0.5070
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 1.1097, Accuracy: 0.6000
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 0.9134, Accuracy: 0.6688
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 0.9257, Accuracy: 0.6700
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 0.9101, Accuracy: 0.6778
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 0.7254, Accuracy: 0.7420
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+Valutazione - Loss: 0.6448, Accuracy: 0.7774
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.25_rho_None.pth con accuratezza: 0.7774
+Valutazione finale - Loss: 0.6448, Accuracy: 0.7774
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.25_rho_None.pth
+[I 2025-05-05 11:06:24,007] Trial 8 finished with value: 0.7718 and parameters: {'lambda_': 0.25}. Best is trial 6 with value: 0.7838.
+Valutazione - Loss: 0.6434, Accuracy: 0.7718
+Valutazione - Loss: 1.7466, Accuracy: 0.3314
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 1.4518, Accuracy: 0.4620
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 1.2754, Accuracy: 0.5350
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 1.1114, Accuracy: 0.6014
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.9304, Accuracy: 0.6710
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.7634, Accuracy: 0.7188
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6403, Accuracy: 0.7680
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.7040, Accuracy: 0.7470
+>>> Modello non migliorato. Accuratezza attuale: 0.7470, Migliore: 0.7680
+Valutazione - Loss: 0.6291, Accuracy: 0.7764
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.5593, Accuracy: 0.8070
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth con accuratezza: 0.8070
+Valutazione finale - Loss: 0.5593, Accuracy: 0.8070
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.35_rho_None.pth
+[I 2025-05-05 11:11:41,859] Trial 9 finished with value: 0.809 and parameters: {'lambda_': 0.35000000000000003}. Best is trial 9 with value: 0.809.
+Valutazione - Loss: 0.5466, Accuracy: 0.8090
+>>> Miglior Lambda trovato: 0.3500
+>>> Training with SGD
+>>> Loss configuration: saloss
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6128, Accuracy: 0.7806
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6085, Accuracy: 0.7858
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6384, Accuracy: 0.7740
+>>> Modello non migliorato. Accuratezza attuale: 0.7740, Migliore: 0.7858
+Valutazione - Loss: 0.6110, Accuracy: 0.7860
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6232, Accuracy: 0.7914
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.5711, Accuracy: 0.8068
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.6495, Accuracy: 0.7750
+>>> Modello non migliorato. Accuratezza attuale: 0.7750, Migliore: 0.8068
+Valutazione - Loss: 0.5714, Accuracy: 0.8108
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.4901, Accuracy: 0.8308
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth
+Valutazione - Loss: 0.5050, Accuracy: 0.8184
+>>> Modello non migliorato. Accuratezza attuale: 0.8184, Migliore: 0.8308
+>>> Salvando il miglior modello del trial in results/model_sgd_lambda_0.35_rho_None.pth con accuratezza: 0.8308
+Valutazione finale - Loss: 0.4901, Accuracy: 0.8308
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.35_rho_None.pth
+>>> Modello migliore ricaricato da results/model_sgd_lambda_0.35_rho_None.pth
+
+Valutazione - Loss: 0.4999, Accuracy: 0.8252
+Valutazione - Loss: 0.5165, Accuracy: 0.8281
+Sharpness: 40.51070486744748
+Total parameters: 3412394, Zero parameters: 0
+Sparcity: 0.0, Path norm: 39.47128847734314
+Stability: 2.2838566593463838e-08, PredVar: 8.295852543869879e-15
+
+>>> Metriche calcolate:
+lambda: 0.3500
+val_loss: 0.4999
+val_accuracy: 0.8252
+test_loss: 0.5165
+test_accuracy: 0.8281
+sharpness: 40.5107
+sparsity: 0.0000
+path_norm: 39.4713
+stability: 2.2838566593463838e-08
+prediction_variance: 8.295852543869879e-15
+robust_accuracy: 0.4034
+flat_minima: 0.0035
+ece: 0.07783113420009613
+Risultati aggiunti a results/metrics_summary.csv
+Training completo e metriche salvate!
