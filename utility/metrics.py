@@ -141,3 +141,24 @@ def evaluate_trades_robustness(model, dataloader, criterion, device, log):
     avg_kl = sum(kl_values) / len(kl_values) if kl_values else 0.0
     log.best_metrics.update({"trades_kl": avg_kl})
     print(f">>> TRADES KL Divergence: {avg_kl:.6f}")
+
+
+import csv
+
+def read_metrics_csv(filepath):
+    """
+    Legge il file metrics_summary.csv e restituisce i dati come una lista di dizionari.
+
+    Args:
+        filepath (str): Percorso del file CSV.
+
+    Returns:
+        list[dict]: Lista di dizionari con le metriche.
+    """
+    metrics = []
+    with open(filepath, mode="r") as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            # Converti i valori numerici in float, se possibile
+            metrics.append({key: float(value) if value.replace('.', '', 1).isdigit() else value for key, value in row.items()})
+    return metrics

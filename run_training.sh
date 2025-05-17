@@ -16,7 +16,7 @@ source .venv/bin/activate
 
 # Esegui il tuo script Python, per loss usare focal , logitnorm, trades, huber , saloss
 # --optimize_rho  --optimize_lambda \
-python train.py \
+python main.py \
     --batch_size 128 \
     --depth 2 \
     --epochs 10 \
@@ -27,7 +27,7 @@ python train.py \
     --lambda_ 0.7 \
     --lambda_range 0,1,0.2 \
     --dataset cifar10 \
-    --loss_type trades \
+    --loss_type logitnorm \
     --optimizer sgd \
     --optimize_lambda
 
