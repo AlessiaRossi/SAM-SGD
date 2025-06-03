@@ -12,23 +12,24 @@ module load CUDA/12.1.1
 module load PyTorch/2.1.2-foss-2023a-CUDA-12.1.1
 
 # Attiva il virtual environment
-source .venv/bin/activate
+source ~/venvs/alessia-ml-env/bin/activate
 
 # Esegui il tuo script Python, per loss usare focal , logitnorm, trades, huber , saloss
-# --optimize_rho  --optimize_lambda \
-python main.py \
-    --batch_size 128 \
-    --depth 2 \
-    --epochs 10 \
-    --learning_rate 0.1 \
-    --momentum 0.9 \
-    --weight_decay 5e-4 \
-    --rho 0.05 \
-    --lambda_ 0.7 \
-    --lambda_range 0,1,0.2 \
-    --dataset cifar10 \
-    --loss_type logitnorm \
-    --optimizer sgd \
-    --optimize_lambda
+# --optimize_rho  --optimize_lambda \    --lambda_range 0,0.5,1 \
+#python main.py \
+#    --batch_size 128 \
+#    --depth 2 \
+#    --epochs 5 \
+#    --learning_rate 0.1 \
+#    --momentum 0.9 \
+#    --weight_decay 5e-4 \
+#    --rho 0.05 \
+#    --lambda_ 0 \
+#    --dataset cifar10 \
+#    --loss_type logitnorm \
+#    --optimizer sam \
+
+python visualization.py
+    
 
   

@@ -1,0 +1,9 @@
+This job can be monitored from: https://job.c3se.chalmers.se/alvis/4585554
+   lambda  val_loss  ...  loss_type  optimizer
+0    0.80  0.724682  ...  logitnorm        sgd
+1    0.30  1.250248  ...  logitnorm        sgd
+2    0.45  1.166006  ...  logitnorm        sgd
+3    0.55  1.120488  ...  logitnorm        sgd
+4    0.05  0.125458  ...      focal        sgd
+
+[5 rows x 15 columns]

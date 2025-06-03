@@ -14,9 +14,28 @@ from model.Net import WRN56_2, WRN56_4, WRN56_8
 from optimizer.rho import optimize_rho_with_optuna
 from torch.optim.lr_scheduler import StepLR
 from optimizer.optimizer import create_optimizer
-from utility.visualization import plot_pareto_front, plot_spider
 import numpy as np
 from matplotlib import pyplot as plt
+import random
+import numpy as np
+import torch
+
+def set_seed(seed=42):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+set_seed(42)
+def seed_worker(worker_id):
+    worker_seed = 42 + worker_id
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=128, type=int)
@@ -46,7 +65,13 @@ if __name__ == "__main__":
     args.device = device
 
     dataset, num_classes = load_dataset(args.dataset, args.batch_size)
-    train_loader = DataLoader(dataset["train"], batch_size=args.batch_size, shuffle=True, num_workers=4)  # aggiunto 
+    train_loader = DataLoader(
+        dataset["train"],
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=4,
+        worker_init_fn=seed_worker
+    )
     model_fn = {2: WRN56_2, 4: WRN56_4, 8: WRN56_8}.get(args.depth)
     if model_fn is None:
         raise ValueError(f"Unsupported depth {args.depth}")
@@ -85,17 +110,16 @@ if __name__ == "__main__":
         args.rho = best_rho
         args.lambda_ = best_lambda
         lambda_values = [best_lambda]
-
     elif args.optimize_lambda:
         best_lambda = optimize_lambda_with_optuna(train, model_fn, dataset, args, n_trials=args.n_trials)
         args.lambda_ = best_lambda
         lambda_values = [best_lambda]
-
     else:
         start, end, step = map(float, args.lambda_range.split(","))
         lambda_values = [round(start + i * step, 2) for i in range(int((end - start) / step) + 1)]
 
     print(f">>> Training with {args.optimizer.upper()}\n>>> Loss configuration: {args.loss_type}")
+    
     for lambda_value in lambda_values:
         model = model_fn(num_classes=num_classes).to(device)
         optimizer, use_sam = create_optimizer(model, args)
@@ -120,16 +144,15 @@ if __name__ == "__main__":
             model.to(device)
             print(f">>> Modello migliore ricaricato da {log.best_model_path}")
         else:
-            print(f">>> ⚠️ Nessun file trovato in {log.best_model_path}, skip del caricamento modello.")
+            print(f">>> Nessun file trovato in {log.best_model_path}, verrà creato dopo il training.")
+            
 
-        # Carica il modello
-        model.load_state_dict(torch.load(log.best_model_path))
 
         # Esegui il training
         criterion = train(model, optimizer, scheduler, dataset, args, log, use_sam=use_sam, lambda_value=lambda_value, model_path=model_path)
 
         # Salvataggio del miglior modello
-        if log.best_model_path:
+        if log.best_model_path and os.path.exists(log.best_model_path):
             log.best_model_path = os.path.normpath(log.best_model_path)  # Normalizza il percorso
             model.load_state_dict(torch.load(log.best_model_path))
             print(f">>> Modello migliore ricaricato da {log.best_model_path}")
@@ -189,25 +212,85 @@ if __name__ == "__main__":
         print(f">>> Caricamento dei risultati da {metrics_csv_path}...")
         metrics_summary = read_metrics_csv(metrics_csv_path)
 
-        # Visualizzazione dei risultati
         print("\n>>> Visualizzazione dei risultati:")
-        plot_pareto_front(
-            metrics_summary,
-            x_metric="test_loss",
-            y_metric="val_accuracy",
-            title="Pareto Front: Test Loss vs Validation Accuracy",
-            output_path="results/pareto_front.png"
-        )
+'''
+        # 1. Spider plot per ogni valore di lambda (confronto tra loss)
+        unique_lambdas = sorted(set(float(m["lambda"]) for m in metrics_summary))
+        metric_names = [
+            "val_accuracy", "robust_accuracy", "sharpness", "flat_minima",
+            "prediction_variance", "stability", "ece"
+        ]
+        for lam in unique_lambdas:
+            configs = [m for m in metrics_summary if abs(float(m["lambda"]) - lam) < 1e-4]
+            if len(configs) < 2:
+                continue
+            config_labels = [f"{m.get('loss_type','').capitalize()} ({m.get('optimizer','').upper()})" for m in configs]
+            plot_spider(
+                metrics=configs,
+                config_labels=config_labels,
+                metric_names=metric_names,
+                loss_names=[m.get("loss_type", "unknown") for m in configs],
+                title_prefix=f"Profilo multi-metrico per λ={lam:.2f}",
+                output_path=f"results/spider_lambda_{lam:.2f}.png"
+            )
 
-        config_labels = [f"Lambda={m['lambda']}" for m in metrics_summary]
-        plot_spider(
-            metrics_summary,
-            config_labels,
-            loss_names=["focal" , "logitnorm", "trades", "huber" , "saloss"],
-            title="Comparison of Configurations",
-            output_path="results/spider_plot.png"
-        )
+        # 2. Pareto front tra varie metriche
+        pareto_configs = [
+            ("val_accuracy", "robust_accuracy", "flat_minima", "Pareto Front: Val Accuracy vs Robust Accuracy", "pareto_valacc_robustacc.png", "viridis"),
+            ("val_accuracy", "sharpness", "optimizer", "Pareto Front: Val Accuracy vs Sharpness", "pareto_valacc_sharpness.png", "plasma"),
+            ("val_accuracy", "flat_minima", "optimizer", "Pareto Front: Val Accuracy vs Flat Minima", "pareto_valacc_flatminima.png", "coolwarm"),
+            ("sharpness", "stability", "optimizer", "Pareto Front: Sharpness vs Stability", "pareto_sharpness_stability.png", "viridis"),
+        ]
+        for x, y, c, title, fname, cmap in pareto_configs:
+            plot_pareto_front(
+                metrics=metrics_summary,
+                x_metric=x,
+                y_metric=y,
+                color_metric=c,
+                title=title,
+                output_path=f"results/{fname}",
+                cmap=cmap
+            )
+
+        # 3. Trend plot vs lambda per ogni loss_type
+        metrics_to_plot = [
+            ("val_accuracy", False, False),
+            ("robust_accuracy", False, False),
+            ("sharpness", True, False),
+            ("prediction_variance", False, True),
+            ("flat_minima", False, True),
+        ]
+        loss_types = set(m["loss_type"] for m in metrics_summary)
+        for loss in loss_types:
+            subset = [m for m in metrics_summary if m["loss_type"] == loss]
+            if not subset:
+                continue
+            for metric, log_scale, normalize in metrics_to_plot:
+                title = f"{metric.replace('_', ' ').capitalize()} vs λ - Loss: {loss.capitalize()}"
+                output_path = f"results/trend_{metric}_vs_lambda_{loss}.png"
+                plot_metric_trend(
+                    metrics=subset,
+                    x_param="lambda",
+                    y_metric=metric,
+                    label=loss.capitalize(),
+                    output_path=output_path,
+                    log_scale=log_scale,
+                    normalize=normalize,
+                    title=title
+                )
+
+        # 4. Bar plot comparativi e heatmap confronto loss
+        metric_names_bar = ["val_accuracy", "robust_accuracy", "sharpness", "stability", "ece"]
+        plot_bar_comparison(metrics_summary, metric_names_bar)
+        plot_loss_comparison(metrics_summary, output_path="results/loss_comparison_matrix.png")
+
+        print(">>> Tutti i plot sono stati generati e salvati nella cartella results/")
     else:
         print(f">>> ⚠️ Il file {metrics_csv_path} non esiste. Assicurati di aver salvato i risultati prima di visualizzarli.")
 
     print("Training completo e metriche salvate!")
+
+    metric_names = ["val_accuracy", "robust_accuracy", "sharpness", "stability", "ece"]
+    plot_bar_comparison(metrics_summary, metric_names)
+
+'''
